@@ -1,0 +1,37 @@
+---
+import { Icon } from "astro-icon/components";
+import type { User } from "~/domain/user/schema";
+import { timeAgo } from "~/lib/format";
+import { routes } from "~/server/contants";
+import Avatar from "./Avatar.astro";
+import Panel from "./Panel.astro";
+import StatusBadge from "./StatusBadge.astro";
+
+interface Props {
+  users: User[];
+}
+
+const { users } = Astro.props;
+---
+
+<Panel title="Recent sign-ups" subtitle="The latest people to join">
+  <a slot="action" href={routes.private.users} class="btn btn-ghost btn-sm gap-1">
+    View all
+    <Icon name="heroicons:arrow-right-20-solid" class="size-4" />
+  </a>
+  <ul class="divide-y divide-base-content/10">
+    {
+      users.map((u) => (
+        <li class="flex items-center gap-4 py-3">
+          <Avatar name={u.name} src={u.avatar} />
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-sm font-medium">{u.name}</p>
+            <p class="truncate text-xs text-base-content/50">{u.email}</p>
+          </div>
+          <span class="hidden text-xs text-base-content/40 sm:inline">{timeAgo(u.createdAt)}</span>
+          <StatusBadge status={u.status} />
+        </li>
+      ))
+    }
+  </ul>
+</Panel>

@@ -1,0 +1,38 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  page: number;
+  pages: number;
+  from: number;
+  to: number;
+  total: number;
+  /** Builds the link for a page, keeping the active filters */
+  hrefFor: (page: number) => string;
+}
+
+const { page, pages, from, to, total, hrefFor } = Astro.props;
+---
+
+<div class="flex items-center justify-between border-t border-base-content/10 px-6 py-3 text-sm text-base-content/60">
+  <span>Showing {from}–{to} of {total}</span>
+  <div class="join">
+    <a
+      href={hrefFor(page - 1)}
+      class={`btn btn-sm join-item ${page <= 1 ? "btn-disabled" : ""}`}
+      aria-disabled={page <= 1}
+      aria-label="Previous page"
+    >
+      <Icon name="heroicons:chevron-left-20-solid" class="size-4" />
+    </a>
+    <span class="btn btn-sm join-item pointer-events-none">{page} / {pages}</span>
+    <a
+      href={hrefFor(page + 1)}
+      class={`btn btn-sm join-item ${page >= pages ? "btn-disabled" : ""}`}
+      aria-disabled={page >= pages}
+      aria-label="Next page"
+    >
+      <Icon name="heroicons:chevron-right-20-solid" class="size-4" />
+    </a>
+  </div>
+</div>

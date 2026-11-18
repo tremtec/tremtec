@@ -1,0 +1,14 @@
+---
+import { dashboardContent } from "~/ui/contents/dashboard";
+import ProductCard from "./ProductCard.astro";
+---
+
+<section>
+  <div class="mb-5">
+    <h3 class="text-xl font-bold">On the roadmap</h3>
+    <p class="text-sm text-base-content/50">New products arriving on the platform</p>
+  </div>
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+    {dashboardContent.products.map((product) => <ProductCard product={product} />)}
+  </div>
+</section>

@@ -16,8 +16,8 @@ import {
   updateUserRequestSchema,
   userIdParamSchema,
 } from "~/domain/user/schema";
-import { deleteUser, updateUser } from "~/domain/user/service";
 import { isHtmxRequest } from "~/lib/htmx";
+import { isAdmin } from "~/lib/session";
 import type { AppEnv } from "./env";
 
 const requireAdmin = createMiddleware<AppEnv>(async (c, next) => {
@@ -26,11 +26,11 @@ const requireAdmin = createMiddleware<AppEnv>(async (c, next) => {
 
   const user = await resolveSessionUser(
     getCookie(c, SESSION_COOKIE_NAME),
-    c.env.DB,
+    c.var.services.users,
     config.SESSION_SECRET,
   );
   if (!user) return c.json({ error: "Unauthorized" }, 401);
-  if (user.role !== "admin" || user.status !== "active") {
+  if (!isAdmin(user)) {
     return c.json({ error: "Forbidden" }, 403);
   }
 
@@ -53,8 +53,7 @@ export const users = new Hono<AppEnv>()
     zValidator("form", updateUserRequestSchema),
     async (c) => {
       const { id } = c.req.valid("param");
-      const result = await updateUser(
-        c.env.DB,
+      const result = await c.var.services.users.updateUser(
         c.get("user").id,
         id,
         c.req.valid("form"),
@@ -72,7 +71,7 @@ export const users = new Hono<AppEnv>()
   )
   .delete("/:id", zValidator("param", userIdParamSchema), async (c) => {
     const { id } = c.req.valid("param");
-    const result = await deleteUser(c.env.DB, c.get("user").id, id);
+    const result = await c.var.services.users.deleteUser(c.get("user").id, id);
 
     if (!result.ok) {
       return c.json(

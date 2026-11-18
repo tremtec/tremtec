@@ -1,0 +1,18 @@
+---
+interface Props {
+  name: string;
+  isAdmin: boolean;
+}
+
+const { name, isAdmin } = Astro.props;
+const firstName = name.split(" ")[0];
+---
+
+<section>
+  <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
+    Welcome back, <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">{firstName}</span>
+  </h2>
+  <p class="mt-2 text-base-content/60">
+    {isAdmin ? "Here's how your platform is doing today." : "Here's what we're building next."}
+  </p>
+</section>

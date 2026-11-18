@@ -5,6 +5,11 @@
 - [ ] ref: move private pages under /admin
 - [ ] ref: clean up project removing boilerplate info
 - [ ] ref: revamp UI/UX and color scheme to match branding
+- [ ] ref: decide on an i18n approach for UI copy
+  - copy lives in `src/ui/contents/*.ts` (single language, not i18n)
+  - Astro has i18n routing (`i18n` config, `astro:i18n`) but no string translation
+  - decide: URL strategy (`/pt-br/` prefix?), string storage and lookup, blog/products localisation, locale for the signed-in app
+  - deliver: short ADR + one page migrated as reference
 
 - [ ] debt: set sitemap environment domain during pulumi deployment
 

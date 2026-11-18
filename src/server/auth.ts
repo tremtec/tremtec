@@ -10,7 +10,6 @@ import {
   signSession,
 } from "~/domain/auth/service";
 import type { Provider } from "~/domain/shared/provider";
-import { isAdminEmail, signIn } from "~/domain/user/service";
 import type { AppEnv } from "./env";
 import { routes } from "./contants";
 
@@ -35,11 +34,7 @@ async function startSession(
   const identity = extractOAuthUser(provider, payload);
   if (!identity) return c.redirect(failed);
 
-  const user = await signIn(
-    c.env.DB,
-    identity,
-    isAdminEmail(identity.email, emailVerified),
-  );
+  const user = await c.var.services.users.signIn(identity, emailVerified);
   if (user.status === "suspended") {
     return c.redirect(`${routes.public.login}?error=suspended`);
   }

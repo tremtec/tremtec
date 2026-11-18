@@ -7,7 +7,7 @@ import {
 } from "~/domain/auth/schema";
 import type { Provider } from "~/domain/shared/provider";
 import type { User } from "~/domain/user/schema";
-import { getUser } from "~/domain/user/service";
+import type { UserService } from "~/domain/user/service";
 
 /**
  * Extracts normalized user data from an OAuth provider payload.
@@ -135,7 +135,7 @@ export function getSessionCookieConfig() {
  */
 export async function resolveSessionUser(
   cookieValue: string | undefined,
-  db: D1Database,
+  users: Pick<UserService, "getUser">,
   secret: string,
 ): Promise<User | null> {
   if (!cookieValue) return null;
@@ -143,6 +143,6 @@ export async function resolveSessionUser(
   const session = await verifySession(cookieValue, secret);
   if (!session) return null;
 
-  const user = await getUser(db, session.uid);
+  const user = await users.getUser(session.uid);
   return user && user.status !== "suspended" ? user : null;
 }

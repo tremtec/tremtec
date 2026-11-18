@@ -4,6 +4,8 @@ declare namespace App {
   interface Locals {
     title: string;
     user: CurrentUser | undefined;
+    /** Request-scoped services, provided by the middleware. */
+    services: import("./server/services").Services;
   }
 }
 

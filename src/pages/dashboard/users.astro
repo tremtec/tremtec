@@ -1,23 +1,17 @@
 ---
-import { env } from "cloudflare:workers";
-import { Icon } from "astro-icon/components";
-import {
-  listUsersQuerySchema,
-  roleEnum,
-  statusEnum,
-} from "~/domain/user/schema";
-import { listUsers } from "~/domain/user/service";
-import { timeAgo } from "~/lib/format";
+import { listUsersQuerySchema } from "~/domain/user/schema";
+import { requireUser } from "~/lib/session";
 import { routes } from "~/server/contants";
-import Avatar from "~/ui/components/app/Avatar.astro";
+import ErrorToast from "~/ui/components/app/users/ErrorToast.astro";
+import UserFilters from "~/ui/components/app/users/UserFilters.astro";
+import UsersTable from "~/ui/components/app/users/UsersTable.astro";
 import AppLayout from "~/ui/components/layouts/AppLayout.astro";
 
 export const prerender = false;
 
 const PAGE_SIZE = 10;
 
-const me = Astro.locals.user;
-if (!me) return Astro.redirect(routes.public.login);
+const me = requireUser(Astro.locals);
 
 // Blank filters (the "All" options) arrive as empty strings
 const params = Object.fromEntries(
@@ -35,20 +29,15 @@ const query = parsed.success
   ? parsed.data
   : listUsersQuerySchema.parse({ limit: PAGE_SIZE });
 
-const { users, total } = await listUsers(env.DB, query);
+const { users, total } = await Astro.locals.services.users.listUsers(query);
 const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-const from = total === 0 ? 0 : query.offset + 1;
-const to = query.offset + users.length;
 
-const pageHref = (n: number) => {
+const hrefFor = (n: number) => {
   const next = new URLSearchParams(Astro.url.searchParams);
   next.set("page", String(n));
   return `${routes.private.users}?${next}`;
 };
 const hasFilters = Boolean(query.q || query.role || query.status);
-
-const selectClass =
-  "select select-sm w-28 rounded-lg border-base-content/15 bg-base-100/60 capitalize";
 ---
 
 <AppLayout title="Users | TremTec" heading="Users">
@@ -56,180 +45,25 @@ const selectClass =
     <section class="flex flex-wrap items-end justify-between gap-4">
       <div>
         <h2 class="text-3xl font-bold tracking-tight">Users</h2>
-        <p class="mt-2 text-base-content/60">
-          Approve new sign-ups, assign roles and suspend access.
-        </p>
+        <p class="mt-2 text-base-content/60">Approve new sign-ups, assign roles and suspend access.</p>
       </div>
       <p class="rounded-full bg-primary/15 px-4 py-1.5 text-sm font-semibold text-primary">
         {total} {total === 1 ? "user" : "users"}{hasFilters ? " found" : ""}
       </p>
     </section>
 
-    <!-- Filters -->
-    <form
-      method="get"
-      class="flex flex-wrap items-center gap-3 rounded-2xl border border-base-content/10 bg-base-200/60 p-4 backdrop-blur"
-    >
-      <label class="input input-sm flex min-w-56 flex-1 items-center gap-2 rounded-lg border-base-content/15 bg-base-100/60">
-        <Icon name="heroicons:magnifying-glass" class="size-4 text-base-content/40" />
-        <input type="search" name="q" value={query.q ?? ""} placeholder="Search name, email or login" class="grow" />
-      </label>
-      <select name="role" class={selectClass} aria-label="Filter by role">
-        <option value="">All roles</option>
-        {roleEnum.options.map((r) => <option value={r} selected={query.role === r}>{r}</option>)}
-      </select>
-      <select name="status" class={selectClass} aria-label="Filter by status">
-        <option value="">All statuses</option>
-        {statusEnum.options.map((s) => <option value={s} selected={query.status === s}>{s}</option>)}
-      </select>
-      <button type="submit" class="btn btn-primary btn-sm">Apply</button>
-      {hasFilters && <a href={routes.private.users} class="btn btn-ghost btn-sm">Clear</a>}
-    </form>
-
-    <!-- Table -->
-    <div class="overflow-hidden rounded-2xl border border-base-content/10 bg-base-200/60 backdrop-blur">
-      <div class="overflow-x-auto">
-        <table class="table min-w-[52rem]">
-          <thead>
-            <tr class="border-base-content/10 text-xs uppercase tracking-wider text-base-content/50">
-              <th class="pl-6">User</th>
-              <th>Provider</th>
-              <th>Role</th>
-              <th>Status</th>
-              <th>Last active</th>
-              <th class="pr-6"><span class="sr-only">Actions</span></th>
-            </tr>
-          </thead>
-          <tbody>
-            {
-              users.map((u) => {
-                const isMe = u.id === me.id;
-                return (
-                  <tr class="border-base-content/10 transition-colors hover:bg-base-content/[0.03]">
-                    <td class="pl-6">
-                      <div class="flex items-center gap-3">
-                        <Avatar name={u.name} src={u.avatar} />
-                        <div class="min-w-0">
-                          <p class="flex items-center gap-2 font-medium">
-                            {u.name}
-                            {isMe && <span class="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold uppercase text-primary">You</span>}
-                          </p>
-                          <p class="text-xs text-base-content/50">{u.email}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="inline-flex items-center gap-1.5 text-sm capitalize text-base-content/70">
-                        <Icon name={u.provider === "github" ? "mdi:github" : "mdi:google"} class="size-4" />
-                        {u.provider}
-                      </span>
-                    </td>
-                    <td>
-                      <select
-                        name="role"
-                        class={selectClass}
-                        aria-label={`Role for ${u.name}`}
-                        disabled={isMe}
-                        hx-patch={`/api/users/${u.id}`}
-                        hx-trigger="change"
-                        hx-swap="none"
-                      >
-                        {roleEnum.options.map((r) => <option value={r} selected={u.role === r}>{r}</option>)}
-                      </select>
-                    </td>
-                    <td>
-                      <select
-                        name="status"
-                        class={selectClass}
-                        aria-label={`Status for ${u.name}`}
-                        disabled={isMe}
-                        hx-patch={`/api/users/${u.id}`}
-                        hx-trigger="change"
-                        hx-swap="none"
-                      >
-                        {statusEnum.options.map((s) => <option value={s} selected={u.status === s}>{s}</option>)}
-                      </select>
-                    </td>
-                    <td class="whitespace-nowrap text-sm text-base-content/60">{timeAgo(u.lastLoginAt)}</td>
-                    <td class="pr-6 text-right">
-                      {!isMe && (
-                        <button
-                          type="button"
-                          class="btn btn-ghost btn-square btn-sm text-base-content/50 hover:bg-error/10 hover:text-error"
-                          aria-label={`Delete ${u.name}`}
-                          title="Delete user"
-                          hx-delete={`/api/users/${u.id}`}
-                          hx-confirm={`Delete ${u.name}? They can sign up again, but will start as pending.`}
-                          hx-swap="none"
-                        >
-                          <Icon name="heroicons:trash" class="size-4" />
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })
-            }
-          </tbody>
-        </table>
-      </div>
-
-      {
-        users.length === 0 && (
-          <div class="flex flex-col items-center gap-2 px-6 py-16 text-center">
-            <span class="flex size-14 items-center justify-center rounded-2xl bg-base-content/5">
-              <Icon name="heroicons:users" class="size-7 text-base-content/40" />
-            </span>
-            <p class="font-semibold">No users found</p>
-            <p class="text-sm text-base-content/50">Try a different search or clear the filters.</p>
-          </div>
-        )
-      }
-
-      <div class="flex items-center justify-between border-t border-base-content/10 px-6 py-3 text-sm text-base-content/60">
-        <span>Showing {from}–{to} of {total}</span>
-        <div class="join">
-          <a
-            href={pageHref(page - 1)}
-            class={`btn btn-sm join-item ${page <= 1 ? "btn-disabled" : ""}`}
-            aria-disabled={page <= 1}
-            aria-label="Previous page"
-          >
-            <Icon name="heroicons:chevron-left-20-solid" class="size-4" />
-          </a>
-          <span class="btn btn-sm join-item pointer-events-none">{page} / {pages}</span>
-          <a
-            href={pageHref(page + 1)}
-            class={`btn btn-sm join-item ${page >= pages ? "btn-disabled" : ""}`}
-            aria-disabled={page >= pages}
-            aria-label="Next page"
-          >
-            <Icon name="heroicons:chevron-right-20-solid" class="size-4" />
-          </a>
-        </div>
-      </div>
-    </div>
+    <UserFilters query={query} />
+    <UsersTable
+      users={users}
+      currentUserId={me.id}
+      page={page}
+      pages={pages}
+      from={total === 0 ? 0 : query.offset + 1}
+      to={query.offset + users.length}
+      total={total}
+      hrefFor={hrefFor}
+    />
   </div>
 
-  <div id="toast" class="toast toast-end toast-bottom z-50" role="status" aria-live="polite"></div>
+  <ErrorToast />
 </AppLayout>
-
-<script>
-  // On a failed change, tell the admin why and put the page back in sync
-  document.body.addEventListener("htmx:responseError", async (event) => {
-    const { xhr } = (event as CustomEvent<{ xhr: XMLHttpRequest }>).detail;
-    let message = "Something went wrong";
-    try {
-      message = JSON.parse(xhr.responseText).error ?? message;
-    } catch {}
-
-    const toast = document.getElementById("toast");
-    if (toast) {
-      const alert = document.createElement("div");
-      alert.className = "alert alert-error shadow-lg";
-      alert.textContent = message;
-      toast.replaceChildren(alert);
-    }
-    setTimeout(() => location.reload(), 1800);
-  });
-</script>

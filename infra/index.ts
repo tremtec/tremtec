@@ -1,5 +1,7 @@
 import * as cloudflare from "@pulumi/cloudflare";
+import * as command from "@pulumi/command";
 import * as pulumi from "@pulumi/pulumi";
+import * as crypto from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
@@ -111,6 +113,55 @@ const database = new cloudflare.D1Database(`tremtec-db-${environment}`, {
   name: `tremtec-${environment}`,
 });
 
+// wrangler applies migrations through a config that points at this stack's database
+const migrationsDir = absolutePath("../migrations");
+const migrationFiles = fs
+  .readdirSync(migrationsDir)
+  .filter((file) => file.endsWith(".sql"))
+  .sort();
+const migrationsHash = crypto
+  .createHash("sha256")
+  .update(
+    migrationFiles
+      .map((file) => fs.readFileSync(path.join(migrationsDir, file)))
+      .join("\n"),
+  )
+  .digest("hex");
+
+const wranglerConfig = pulumi
+  .all([database.id, database.name])
+  .apply(([id, name]) => {
+    const file = absolutePath(`../.wrangler.${environment}.json`);
+    fs.writeFileSync(
+      file,
+      JSON.stringify({
+        d1_databases: [
+          {
+            binding: "DB",
+            database_name: name,
+            database_id: id,
+            migrations_dir: migrationsDir,
+          },
+        ],
+      }),
+    );
+    return file;
+  });
+
+const migrationsCommand = pulumi.interpolate`bun run wrangler d1 migrations apply DB --remote --config ${wranglerConfig}`;
+const runMigrations = new command.local.Command(
+  `tremtec-migrations-${environment}`,
+  {
+    dir: absolutePath(".."),
+    create: migrationsCommand,
+    update: migrationsCommand,
+    environment: { CLOUDFLARE_ACCOUNT_ID: accountId },
+    // re-run when a migration is added or changed
+    triggers: [migrationsHash],
+  },
+  { dependsOn: [database] },
+);
+
 const domain = isProd ? "tremtec.com" : "dev.tremtec.com";
 const baseUrl = pulumi.interpolate`https://${domain}`;
 
@@ -186,7 +237,8 @@ const workerVersion = new cloudflare.WorkerVersion(
 
     modules: discoverWorkerModules(absolutePath("../dist/server")),
   },
-  { dependsOn: [worker] },
+  // the database and its schema must exist before the new version goes live
+  { dependsOn: [worker, database, runMigrations] },
 );
 
 const workerDeployment = new cloudflare.WorkersDeployment(
@@ -259,5 +311,6 @@ if (isProd) {
 }
 
 export const databaseName = database.name;
+export const migrations = runMigrations.stdout;
 export const appDomain = baseUrl;
 export const workerScriptName = workerDeployment.scriptName;

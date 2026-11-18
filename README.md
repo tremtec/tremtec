@@ -107,7 +107,7 @@ Infrastructure is managed with Pulumi (`infra/`), one stack per environment. Dep
 - A push to `main` runs [`deploy.yml`](.github/workflows/deploy.yml), which builds the app and deploys the `dev` stack (`dev.tremtec.com`).
 - Pushing a tag `X.Y.Z` where each part is a number, like `1.2.3`, runs [`release.yml`](.github/workflows/release.yml), which builds and deploys the `production` stack (`tremtec.com`) and then creates a GitHub release with generated notes. Other tags, such as `v1.2.3`, `1.2.3-rc` or `1.2.3.4`, are ignored.
 
-Set `session-secret` once per stack (`pulumi config set --secret session-secret "$(openssl rand -base64 32)"`). Pulumi creates the D1 database but does not run migrations: apply them with `wrangler d1 migrations apply DB --remote`.
+Set `session-secret` once per stack (`pulumi config set --secret session-secret "$(openssl rand -base64 32)"`). Pulumi creates the D1 database and applies `migrations/` before the new Worker version goes live, so `CLOUDFLARE_API_TOKEN` must be in the environment.
 
 ```bash
 git tag 1.2.3 && git push origin 1.2.3

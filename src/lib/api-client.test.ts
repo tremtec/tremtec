@@ -1,5 +1,6 @@
 import { testClient } from "hono/testing";
 import { describe, expect, it, vi } from "vitest";
+import { createTestDb } from "~/lib/testing/d1";
 
 // Mock config so importing router.ts doesn't blow up on missing/invalid env vars
 vi.mock("~/config", () => ({
@@ -9,23 +10,16 @@ vi.mock("~/config", () => ({
     GITHUB_SECRET: "test-github-secret",
     GOOGLE_ID: "test-google-id",
     GOOGLE_SECRET: "test-google-secret",
-    NODE_ENV: "test",
-  },
-}));
-
-vi.mock("~/config", () => ({
-  config: {
-    BASE_URL: "http://localhost:4321",
-    GITHUB_ID: "test-github-id",
-    GITHUB_SECRET: "test-github-secret",
-    GOOGLE_ID: "test-google-id",
-    GOOGLE_SECRET: "test-google-secret",
+    SESSION_SECRET: "test-session-secret-at-least-32-chars",
     NODE_ENV: "test",
   },
 }));
 
 const { app } = await import("~/server/router");
-const client = testClient(app);
+const env = { DB: createTestDb() };
+const client = testClient(app, env);
+const request = (path: string, init?: RequestInit) =>
+  app.request(path, init, env);
 
 describe("API server", () => {
   // ── Healthcheck ──────────────────────────────────────────────
@@ -56,7 +50,7 @@ describe("API server", () => {
 
   describe("POST /api/contact", () => {
     it("accepts POST requests at the endpoint", async () => {
-      const res = await app.request("/api/contact", {
+      const res = await request("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
@@ -75,12 +69,12 @@ describe("API server", () => {
     });
 
     it("returns 404 for GET requests (no GET route defined)", async () => {
-      const res = await app.request("/api/contact");
+      const res = await request("/api/contact");
       expect(res.status).toBe(404);
     });
 
     it("rejects invalid JSON payloads", async () => {
-      const res = await app.request("/api/contact", {
+      const res = await request("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: "not valid json",
@@ -90,7 +84,7 @@ describe("API server", () => {
     });
 
     it("validates required fields", async () => {
-      const res = await app.request("/api/contact", {
+      const res = await request("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -107,7 +101,7 @@ describe("API server", () => {
     });
 
     it("accepts valid form data structure", async () => {
-      const res = await app.request("/api/contact", {
+      const res = await request("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({

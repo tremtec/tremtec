@@ -18,17 +18,19 @@ Run `bun run lint` and `bun run test` before committing.
 
 ## Architecture
 
-Simplified layered architecture:
+Layered architecture, cut vertically per feature (`src/domain/<feature>/`):
 
+- **Presentation** (`src/pages/`, `src/ui/`, `src/server/`): Astro pages and components, Hono routes. Only talk to services, never to the database. Pages and routes get services from `Astro.locals.services` / `c.var.services`, which the middleware provides (`src/server/services.ts` is the composition root).
+- **Services** (`src/domain/*/service.ts`): business rules and orchestration of repositories. Built with `createXService(repo)`, no knowledge of storage. Tested with stub repositories.
+- **Repositories** (`src/domain/*/repository.ts`): data access only, query creation and row mapping (D1). Built with `createXRepository(db)`. Tested against real SQL via `src/lib/testing/d1.ts` (`node:sqlite`).
 - **Domain** (`src/domain/*/schema.ts`): entities as Zod schemas, no framework dependencies. Export both the schema and the inferred type.
-- **Services** (`src/domain/*/service.ts`): stateless use cases with injected dependencies. Tests are co-located (`service.test.ts`).
-- **Server** (`src/server/`): Hono routes, validation (`@hono/zod-validator`), OAuth. Delegates to services, holds no business logic. Mounted via `src/pages/api/[...path].ts`.
-- **UI** (`src/ui/`, `src/pages/`): Astro components and pages, Tailwind + DaisyUI, htmx for interactivity. Call the API through `src/lib/api-client.ts`.
-- **Infra** (`infra/`): Pulumi program for the Cloudflare Worker, domain and redirects.
+- **Infra** (`infra/`): Pulumi program for the Cloudflare Worker, D1 database and migrations, domain and redirects.
+
+UI is Tailwind + DaisyUI with htmx for interactivity. Keep pages thin: compose them from components in `src/ui/components/` and put the specifics in the components. Call the API through `src/lib/api-client.ts`.
 
 Auth uses GitHub and Google OAuth. The session cookie holds only a signed `{uid, exp}` (HMAC, `signSession`/`verifySession`); the user is loaded from D1 on each private request, so role and status changes apply immediately. Verified `@tremtec.com` emails become active admins on first sign in, everyone else starts `pending`. Admin-only routes: `/dashboard/users` (middleware) and `/api/users` (Hono).
 
-Users live in D1 (`DB` binding, schema in `migrations/`). Services take the `D1Database` as an argument; tests run them on `node:sqlite` via `src/lib/testing/d1.ts`. Environment is validated in `src/config.ts`.
+Users live in D1 (`DB` binding, schema in `migrations/`). Environment is validated in `src/config.ts`.
 
 The CSP is on: no inline `style=` or `on*=` attributes in UI code. Use classes and htmx attributes.
 
@@ -42,10 +44,10 @@ The CSP is on: no inline `style=` or `on*=` attributes in UI code. Use classes a
 
 ## Adding a Feature
 
-1. Create `src/domain/<feature>/` with `schema.ts` and `service.ts`.
-2. Add routes in `src/server/`.
+1. Create `src/domain/<feature>/` with `schema.ts`, `repository.ts` and `service.ts`.
+2. Register the service in `src/server/services.ts` and add routes in `src/server/`.
 3. Add UI in `src/ui/` and pages in `src/pages/`.
-4. Add service tests, then run lint and tests.
+4. Add repository and service tests, then run lint and tests.
 
 ## Notes
 

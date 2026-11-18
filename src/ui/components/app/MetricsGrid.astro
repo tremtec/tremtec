@@ -1,0 +1,24 @@
+---
+import type { UserMetrics } from "~/domain/user/schema";
+import StatCard from "./StatCard.astro";
+
+interface Props {
+  metrics: UserMetrics;
+}
+
+const { metrics } = Astro.props;
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
+---
+
+<section class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Key metrics">
+  <StatCard label="Total users" value={metrics.total} hint={plural(metrics.admins, "admin")} icon="heroicons:users" />
+  <StatCard label="Active" value={metrics.active} hint="Can use the platform" icon="heroicons:check-badge" tone="success" />
+  <StatCard
+    label="Pending approval"
+    value={metrics.pending}
+    hint={metrics.pending ? "Waiting for review" : "Nothing to review"}
+    icon="heroicons:clock"
+    tone="warning"
+  />
+  <StatCard label="New this week" value={metrics.newThisWeek} hint={`${metrics.suspended} suspended`} icon="heroicons:sparkles" />
+</section>

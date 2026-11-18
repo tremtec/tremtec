@@ -1,0 +1,40 @@
+---
+import type { User } from "~/domain/user/schema";
+import { routes } from "~/server/contants";
+import Logo from "~/ui/components/Logo.astro";
+import { dashboardContent } from "~/ui/contents/dashboard";
+import { landingContent } from "~/ui/contents/landing";
+import NavSection from "./NavSection.astro";
+import UserCard from "./UserCard.astro";
+
+interface Props {
+  user?: User;
+  isAdmin: boolean;
+  currentPath: string;
+}
+
+const { user, isAdmin, currentPath } = Astro.props;
+const { nav, products } = dashboardContent;
+const workspace = [...nav.workspace, ...(isAdmin ? nav.admin : [])];
+---
+
+<aside class="flex min-h-full w-72 flex-col border-r border-base-content/10 bg-base-200/80 backdrop-blur-xl">
+  <a
+    href={routes.public.home}
+    class="flex h-16 items-center gap-3 border-b border-base-content/10 px-6 transition-opacity hover:opacity-80"
+  >
+    <Logo size={32} />
+    <span class="text-lg font-bold tracking-tight">{landingContent.navbar.logo}</span>
+  </a>
+
+  <nav class="flex flex-1 flex-col gap-8 overflow-y-auto px-4 py-6">
+    <NavSection title="Workspace" items={workspace} currentPath={currentPath} />
+    <NavSection
+      title="Products"
+      items={products.map(({ name, icon, accent }) => ({ label: name, icon, accent }))}
+      currentPath={currentPath}
+    />
+  </nav>
+
+  {user && <UserCard user={user} />}
+</aside>

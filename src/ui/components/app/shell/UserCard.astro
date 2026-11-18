@@ -1,0 +1,25 @@
+---
+import { Icon } from "astro-icon/components";
+import type { User } from "~/domain/user/schema";
+import { routes } from "~/server/contants";
+import Avatar from "../Avatar.astro";
+
+interface Props {
+  user: User;
+}
+
+const { user } = Astro.props;
+---
+
+<div class="border-t border-base-content/10 p-4">
+  <div class="flex items-center gap-3 rounded-xl bg-base-content/5 p-3">
+    <Avatar name={user.name} src={user.avatar} />
+    <div class="min-w-0 flex-1 leading-tight">
+      <p class="truncate text-sm font-semibold">{user.name}</p>
+      <p class="text-xs capitalize text-base-content/50">{user.role}</p>
+    </div>
+    <a href={routes.public.logout} class="btn btn-ghost btn-square btn-sm" aria-label="Sign out" title="Sign out">
+      <Icon name="heroicons:arrow-right-start-on-rectangle" class="size-5" />
+    </a>
+  </div>
+</div>
