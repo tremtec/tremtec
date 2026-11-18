@@ -88,7 +88,7 @@ bun run pulumi up --stack production
 GitHub Actions deploys automatically:
 
 - A push to `main` runs [`deploy.yml`](.github/workflows/deploy.yml), which builds the app and deploys the `dev` stack (`dev.tremtec.com`).
-- Pushing a tag like `1.2.3` or `1.2.3-rc` runs [`release.yml`](.github/workflows/release.yml), which deploys the `production` stack (`tremtec.com`) and then creates a GitHub release with generated notes, marked as a pre-release when the tag contains `-`.
+- Pushing a tag like `1.2.3` runs [`release.yml`](.github/workflows/release.yml), which deploys the `production` stack (`tremtec.com`) and then creates a GitHub release with generated notes. Tags that contain a hyphen are ignored.
 
 ```bash
 git tag 1.2.3 && git push origin 1.2.3
