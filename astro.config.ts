@@ -47,9 +47,6 @@ export default defineConfig({
         debug: path.resolve(__dirname, "src/lib/debug-shim.js"),
       },
     },
-    plugins: [
-      // @ts-expect-error - Tailwind CSS plugin for Vite
-      tailwindcss(),
-    ],
+    plugins: [tailwindcss()],
   },
 });
