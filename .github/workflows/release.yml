@@ -4,7 +4,7 @@ on:
   push:
     tags:
       - "*.*.*"
-      - "*.*.*-rc"
+      - "!*-*"
 
 # Never cancel a running `pulumi up`: it leaves the stack locked with pending operations.
 concurrency:
@@ -68,13 +68,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          flags=()
-          if [[ "$GITHUB_REF_NAME" == *-* ]]; then
-            flags+=(--prerelease)
-          fi
           gh release create "$GITHUB_REF_NAME" \
             --repo "$GITHUB_REPOSITORY" \
             --title "Release $GITHUB_REF_NAME" \
             --generate-notes \
-            --verify-tag \
-            "${flags[@]}"
+            --verify-tag
