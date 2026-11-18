@@ -114,8 +114,7 @@ As a fallback, deploy from your machine with the same variables set (mise loads 
 
 ```bash
 bun run build
-cd infra
-bun run pulumi up --stack production # or --stack dev
+cd infra && pulumi up --stack production # or --stack dev
 ```
 
 ## Contributing
