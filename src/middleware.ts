@@ -1,4 +1,3 @@
-import { env } from "cloudflare:workers";
 import { SESSION_COOKIE_NAME } from "~/domain/auth/constants";
 import { resolveSessionUser } from "~/domain/auth/service";
 import { isPrivateRoute, routes } from "~/server/contants";
@@ -23,7 +22,8 @@ const authMiddleware = defineMiddleware(async (context, next) => {
 
   // Only hit the database where the session matters
   if (needsSession) {
-    // Lazy: env is validated at import time and is not available while prerendering
+    // Lazy: neither the Worker env nor process.env exist while prerendering
+    const { env } = await import("cloudflare:workers");
     const { config } = await import("~/config");
     const user = await resolveSessionUser(
       context.cookies.get(SESSION_COOKIE_NAME)?.value,

@@ -10,6 +10,7 @@ bun run build     # production build
 bun run lint      # Biome + astro check
 bun run fix       # Biome auto-fix
 bun run test      # Vitest
+bun run db:migrate && bun run db:seed   # local D1 schema and sample users
 bun w dev         # Worker locally (wrangler)
 ```
 
@@ -25,7 +26,11 @@ Simplified layered architecture:
 - **UI** (`src/ui/`, `src/pages/`): Astro components and pages, Tailwind + DaisyUI, htmx for interactivity. Call the API through `src/lib/api-client.ts`.
 - **Infra** (`infra/`): Pulumi program for the Cloudflare Worker, domain and redirects.
 
-Auth uses GitHub and Google OAuth with HTTP-only session cookies (`src/domain/auth/constants.ts`). Environment is validated in `src/config.ts`.
+Auth uses GitHub and Google OAuth. The session cookie holds only a signed `{uid, exp}` (HMAC, `signSession`/`verifySession`); the user is loaded from D1 on each private request, so role and status changes apply immediately. Verified `@tremtec.com` emails become active admins on first sign in, everyone else starts `pending`. Admin-only routes: `/dashboard/users` (middleware) and `/api/users` (Hono).
+
+Users live in D1 (`DB` binding, schema in `migrations/`). Services take the `D1Database` as an argument; tests run them on `node:sqlite` via `src/lib/testing/d1.ts`. Environment is validated in `src/config.ts`.
+
+The CSP is on: no inline `style=` or `on*=` attributes in UI code. Use classes and htmx attributes.
 
 ## Conventions
 

@@ -18,7 +18,8 @@ See [docs/mission_and_values.md](docs/mission_and_values.md) for the full missio
 
 - **Web**: Astro 7 (SSR on Cloudflare Workers), htmx, Tailwind CSS 4 + DaisyUI
 - **API**: Hono + Zod, mounted at `/api` (`src/pages/api/[...path].ts`)
-- **Auth**: GitHub and Google OAuth, session cookie
+- **Auth**: GitHub and Google OAuth, HMAC-signed session cookies
+- **Data**: Cloudflare D1 (users), migrations in `migrations/`
 - **Infrastructure**: Pulumi + Cloudflare (`infra/`)
 - **Tooling**: Bun, Biome, Vitest, lefthook, mise
 
@@ -38,6 +39,8 @@ src/
 ├── lib/         # API client, errors, helpers
 ├── middleware.ts
 └── config.ts    # Environment validation
+migrations/      # D1 schema migrations
+scripts/         # Local dev helpers (seed data)
 infra/           # Pulumi program
 docs/            # Mission & values, board meeting notes
 .github/         # CI/CD workflows
@@ -55,6 +58,10 @@ bun install
 # .env is stored encrypted in the repo
 mise decrypt
 
+# create the local D1 database and load sample users
+bun run db:migrate
+bun run db:seed
+
 bun run dev
 ```
 
@@ -66,6 +73,8 @@ bun run build      # Production build
 bun run lint       # Biome + astro check
 bun run fix        # Biome auto-fix
 bun run test       # Vitest
+bun run db:migrate # Apply D1 migrations locally
+bun run db:seed    # Load sample users locally
 bun w dev          # Run the built Worker locally (wrangler), after bun run build
 ```
 
@@ -76,6 +85,7 @@ Validated in `src/config.ts`:
 - `BASE_URL`: public application URL
 - `GITHUB_ID`, `GITHUB_SECRET`: GitHub OAuth app
 - `GOOGLE_ID`, `GOOGLE_SECRET`: Google OAuth client
+- `SESSION_SECRET`: signs session cookies, 32+ chars (`openssl rand -base64 32`)
 
 Deployed Workers get them from Pulumi: `BASE_URL` from the stack's domain, the OAuth values from the stack's encrypted config (`infra/Pulumi.<stack>.yaml`).
 
@@ -96,6 +106,8 @@ Infrastructure is managed with Pulumi (`infra/`), one stack per environment. Dep
 
 - A push to `main` runs [`deploy.yml`](.github/workflows/deploy.yml), which builds the app and deploys the `dev` stack (`dev.tremtec.com`).
 - Pushing a tag `X.Y.Z` where each part is a number, like `1.2.3`, runs [`release.yml`](.github/workflows/release.yml), which builds and deploys the `production` stack (`tremtec.com`) and then creates a GitHub release with generated notes. Other tags, such as `v1.2.3`, `1.2.3-rc` or `1.2.3.4`, are ignored.
+
+Set `session-secret` once per stack (`pulumi config set --secret session-secret "$(openssl rand -base64 32)"`). Pulumi creates the D1 database but does not run migrations: apply them with `wrangler d1 migrations apply DB --remote`.
 
 ```bash
 git tag 1.2.3 && git push origin 1.2.3

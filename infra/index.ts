@@ -19,6 +19,8 @@ const secrets = {
     id: config.requireSecret("google-id"),
     secret: config.requireSecret("google-secret"),
   },
+  // signs session cookies: `pulumi config set --secret session-secret "$(openssl rand -base64 32)"`
+  session: config.requireSecret("session-secret"),
 };
 
 const today = () => new Date().toISOString().split("T")[0];
@@ -104,6 +106,11 @@ const worker = new cloudflare.Worker(`tremtec-${environment}`, {
   },
 });
 
+const database = new cloudflare.D1Database(`tremtec-db-${environment}`, {
+  accountId,
+  name: `tremtec-${environment}`,
+});
+
 const domain = isProd ? "tremtec.com" : "dev.tremtec.com";
 const baseUrl = pulumi.interpolate`https://${domain}`;
 
@@ -158,6 +165,17 @@ const workerVersion = new cloudflare.WorkerVersion(
         type: "secret_text",
         secretName: "google-secret",
         text: secrets.google.secret,
+      },
+      {
+        name: "SESSION_SECRET",
+        type: "secret_text",
+        secretName: "session-secret",
+        text: secrets.session,
+      },
+      {
+        type: "d1",
+        name: "DB",
+        id: database.id,
       },
       {
         type: "send_email",
@@ -240,5 +258,6 @@ if (isProd) {
   );
 }
 
+export const databaseName = database.name;
 export const appDomain = baseUrl;
 export const workerScriptName = workerDeployment.scriptName;

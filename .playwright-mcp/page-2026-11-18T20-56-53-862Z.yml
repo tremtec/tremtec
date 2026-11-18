@@ -1,0 +1,187 @@
+- generic [active] [ref=f4e1]:
+    - generic [ref=f4e2]:
+        - generic [ref=f4e3]:
+            - banner [ref=f4e4]:
+                - generic [ref=f4e5]:
+                    - generic [ref=f4e6]: TremTec
+                    - heading "Dashboard" [level=1] [ref=f4e9]
+                - generic [ref=f4e10]:
+                    - generic [ref=f4e11]:
+                        - paragraph [ref=f4e12]: Marco Souza
+                        - paragraph [ref=f4e13]: marco@tremtec.com
+                    - generic [ref=f4e14]: MS
+            - main [ref=f4e15]:
+                - generic [ref=f4e16]:
+                    - generic [ref=f4e17]:
+                        - heading "Welcome back, Marco" [level=2] [ref=f4e18]
+                        - paragraph [ref=f4e19]: Here's how your platform is doing today.
+                    - region "Key metrics" [ref=f4e20]:
+                        - generic [ref=f4e21]:
+                            - paragraph [ref=f4e23]: Total users
+                            - paragraph [ref=f4e27]: "9"
+                            - paragraph [ref=f4e28]: 2 admins
+                        - generic [ref=f4e29]:
+                            - paragraph [ref=f4e31]: Active
+                            - paragraph [ref=f4e35]: "5"
+                            - paragraph [ref=f4e36]: Can use the platform
+                        - generic [ref=f4e37]:
+                            - paragraph [ref=f4e39]: Pending approval
+                            - paragraph [ref=f4e43]: "2"
+                            - paragraph [ref=f4e44]: Waiting for review
+                        - generic [ref=f4e45]:
+                            - paragraph [ref=f4e47]: New this week
+                            - paragraph [ref=f4e51]: "4"
+                            - paragraph [ref=f4e52]: 2 suspended
+                    - generic [ref=f4e53]:
+                        - generic [ref=f4e54]:
+                            - generic [ref=f4e55]:
+                                - generic [ref=f4e56]:
+                                    - heading "New users" [level=3] [ref=f4e57]
+                                    - paragraph [ref=f4e58]: Last 14 days
+                                - generic [ref=f4e59]: 6 total
+                            - img "New users per day over the last 14 days" [ref=f4e60]:
+                                - generic [ref=f4e61]: "0"
+                                - generic [ref=f4e63]: "2"
+                                - generic [ref=f4e65]: "4"
+                                - 'generic "Nov 5: 0 new users" [ref=f4e69]'
+                                - 'generic "Nov 6: 1 new user" [ref=f4e70]'
+                                - 'generic "Nov 7: 0 new users" [ref=f4e71]'
+                                - 'generic "Nov 8: 0 new users" [ref=f4e72]'
+                                - 'generic "Nov 9: 1 new user" [ref=f4e73]'
+                                - 'generic "Nov 10: 0 new users" [ref=f4e74]'
+                                - 'generic "Nov 11: 0 new users" [ref=f4e75]'
+                                - 'generic "Nov 12: 0 new users" [ref=f4e76]'
+                                - 'generic "Nov 13: 1 new user" [ref=f4e77]'
+                                - 'generic "Nov 14: 0 new users" [ref=f4e78]'
+                                - 'generic "Nov 15: 1 new user" [ref=f4e79]'
+                                - 'generic "Nov 16: 1 new user" [ref=f4e80]'
+                                - 'generic "Nov 17: 1 new user" [ref=f4e81]'
+                                - 'generic "Nov 18: 0 new users" [ref=f4e82]'
+                                - generic [ref=f4e83]: Nov 5
+                                - generic [ref=f4e84]: Nov 11
+                                - generic [ref=f4e85]: Nov 18
+                        - generic [ref=f4e86]:
+                            - heading "Sign-in provider" [level=3] [ref=f4e87]
+                            - paragraph [ref=f4e88]: How people join
+                            - generic [ref=f4e89]:
+                                - generic [ref=f4e90]:
+                                    - img "Sign-ins by provider" [ref=f4e91]
+                                    - generic [ref=f4e95]:
+                                        - generic [ref=f4e96]: "9"
+                                        - generic [ref=f4e97]: users
+                                - list [ref=f4e98]:
+                                    - listitem [ref=f4e99]:
+                                        - generic [ref=f4e101]: GitHub
+                                        - generic [ref=f4e102]: "5"
+                                        - generic [ref=f4e103]: 56%
+                                    - listitem [ref=f4e104]:
+                                        - generic [ref=f4e106]: Google
+                                        - generic [ref=f4e107]: "4"
+                                        - generic [ref=f4e108]: 44%
+                    - generic [ref=f4e109]:
+                        - generic [ref=f4e110]:
+                            - generic [ref=f4e111]:
+                                - heading "Recent sign-ups" [level=3] [ref=f4e112]
+                                - paragraph [ref=f4e113]: The latest people to join
+                            - link "View all" [ref=f4e114] [cursor=pointer]:
+                                - /url: /dashboard/users
+                        - list [ref=f4e117]:
+                            - listitem [ref=f4e118]:
+                                - generic [ref=f4e119]: CD
+                                - generic [ref=f4e120]:
+                                    - paragraph [ref=f4e121]: Camila Dias
+                                    - paragraph [ref=f4e122]: camila@mehabilite.com
+                                - generic [ref=f4e123]: yesterday
+                                - generic [ref=f4e124]: pending
+                            - listitem [ref=f4e126]:
+                                - generic [ref=f4e127]: RC
+                                - generic [ref=f4e128]:
+                                    - paragraph [ref=f4e129]: Rafael Costa
+                                    - paragraph [ref=f4e130]: rafael@plantar.me
+                                - generic [ref=f4e131]: 2 days ago
+                                - generic [ref=f4e132]: pending
+                            - listitem [ref=f4e134]:
+                                - generic [ref=f4e135]: PN
+                                - generic [ref=f4e136]:
+                                    - paragraph [ref=f4e137]: Pedro Nunes
+                                    - paragraph [ref=f4e138]: pedro@scale.dev
+                                - generic [ref=f4e139]: 3 days ago
+                                - generic [ref=f4e140]: active
+                            - listitem [ref=f4e142]:
+                                - generic [ref=f4e143]: JM
+                                - generic [ref=f4e144]:
+                                    - paragraph [ref=f4e145]: Julia Mendes
+                                    - paragraph [ref=f4e146]: julia@startup.io
+                                - generic [ref=f4e147]: 5 days ago
+                                - generic [ref=f4e148]: active
+                            - listitem [ref=f4e150]:
+                                - generic [ref=f4e151]: BL
+                                - generic [ref=f4e152]:
+                                    - paragraph [ref=f4e153]: Beatriz Lima
+                                    - paragraph [ref=f4e154]: bia@devopness.com
+                                - generic [ref=f4e155]: 9 days ago
+                                - generic [ref=f4e156]: active
+                    - generic [ref=f4e158]:
+                        - generic [ref=f4e159]:
+                            - heading "On the roadmap" [level=3] [ref=f4e160]
+                            - paragraph [ref=f4e161]: New products arriving on the platform
+                        - generic [ref=f4e162]:
+                            - article [ref=f4e163]:
+                                - generic [ref=f4e164]: Coming soon
+                                - heading "KYC" [level=3] [ref=f4e169]
+                                - paragraph [ref=f4e170]: Know Your Customer
+                                - paragraph [ref=f4e171]: Identity verification and onboarding checks that keep your sign-ups compliant without slowing them down.
+                            - article [ref=f4e172]:
+                                - generic [ref=f4e173]: Coming soon
+                                - heading "Triple-A" [level=3] [ref=f4e178]
+                                - paragraph [ref=f4e179]: Authentication, Authorization, Accounting
+                                - paragraph [ref=f4e180]: Centralised access control with a full audit trail of who did what, and when.
+                            - article [ref=f4e181]:
+                                - generic [ref=f4e182]: Coming soon
+                                - heading "LDPG" [level=3] [ref=f4e187]
+                                - paragraph [ref=f4e188]: Data protection
+                                - paragraph [ref=f4e189]: Data protection tooling to map personal data, track consent and answer requests.
+        - generic [ref=f4e190]:
+            - generic "Close menu"
+            - complementary [ref=f4e191]:
+                - link "TremTec Logo TremTec" [ref=f4e192] [cursor=pointer]:
+                    - /url: /
+                    - img "TremTec Logo" [ref=f4e193]
+                    - generic [ref=f4e194]: TremTec
+                - navigation [ref=f4e195]:
+                    - generic [ref=f4e196]:
+                        - paragraph [ref=f4e197]: Workspace
+                        - list [ref=f4e198]:
+                            - listitem [ref=f4e199]:
+                                - link "Dashboard" [ref=f4e200] [cursor=pointer]:
+                                    - /url: /dashboard
+                            - listitem [ref=f4e203]:
+                                - link "Users" [ref=f4e204] [cursor=pointer]:
+                                    - /url: /dashboard/users
+                    - generic [ref=f4e207]:
+                        - paragraph [ref=f4e208]: Products
+                        - list [ref=f4e209]:
+                            - listitem [ref=f4e210]:
+                                - generic [ref=f4e211]:
+                                    - generic [ref=f4e214]: KYC
+                                    - generic [ref=f4e215]: Soon
+                            - listitem [ref=f4e216]:
+                                - generic [ref=f4e217]:
+                                    - generic [ref=f4e220]: Triple-A
+                                    - generic [ref=f4e221]: Soon
+                            - listitem [ref=f4e222]:
+                                - generic [ref=f4e223]:
+                                    - generic [ref=f4e226]: LDPG
+                                    - generic [ref=f4e227]: Soon
+                - generic [ref=f4e229]:
+                    - generic [ref=f4e230]: MS
+                    - generic [ref=f4e231]:
+                        - paragraph [ref=f4e232]: Marco Souza
+                        - paragraph [ref=f4e233]: admin
+                    - link "Sign out" [ref=f4e234] [cursor=pointer]:
+                        - /url: /api/auth/logout
+    - generic [ref=f4e239]:
+        - button "Menu" [ref=f4e240]
+        - button "Inspect" [ref=f4e246]
+        - button "Audit" [ref=f4e250]
+        - button "Settings" [ref=f4e255]

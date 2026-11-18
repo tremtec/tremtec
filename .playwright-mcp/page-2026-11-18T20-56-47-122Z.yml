@@ -1,0 +1,35 @@
+- generic [active] [ref=f2e1]:
+    - generic [ref=f2e2]:
+        - checkbox
+        - generic [ref=f2e6]:
+            - link "TremTec Logo TremTec" [ref=f2e7] [cursor=pointer]:
+                - /url: /
+                - img "TremTec Logo" [ref=f2e8]
+                - generic [ref=f2e9]: TremTec
+            - paragraph [ref=f2e10]: Welcome back, Innovator.
+            - generic [ref=f2e11]:
+                - link "GitHub Sign in with GitHub" [ref=f2e13] [cursor=pointer]:
+                    - /url: /api/auth/github
+                    - img "GitHub" [ref=f2e14]
+                    - text: Sign in with GitHub
+                - link "Google Sign in with Google" [ref=f2e17] [cursor=pointer]:
+                    - /url: /api/auth/google
+                    - img "Google" [ref=f2e18]
+                    - text: Sign in with Google
+            - generic [ref=f2e23]: Or continue with email
+            - generic [ref=f2e25]:
+                - textbox "Enter your email" [ref=f2e26]
+                - button "Continue with Email" [ref=f2e27] [cursor=pointer]
+            - paragraph [ref=f2e28]:
+                - text: By signing in, you agree to our
+                - link "Terms" [ref=f2e29] [cursor=pointer]:
+                    - /url: "#"
+                - text: and
+                - link "Privacy Policy" [ref=f2e30] [cursor=pointer]:
+                    - /url: "#"
+                - text: .
+    - generic [ref=f2e33]:
+        - button "Menu" [ref=f2e34]
+        - button "Inspect" [ref=f2e40]
+        - button "Audit" [ref=f2e44]
+        - button "Settings" [ref=f2e49]
