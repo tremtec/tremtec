@@ -85,6 +85,22 @@ cd infra
 bun run pulumi up --stack production
 ```
 
+GitHub Actions deploys automatically:
+
+- A push to `main` runs [`deploy.yml`](.github/workflows/deploy.yml), which builds the app and deploys the `dev` stack (`dev.tremtec.com`).
+- Pushing a tag like `1.2.3` or `1.2.3-rc` runs [`release.yml`](.github/workflows/release.yml), which deploys the `production` stack (`tremtec.com`) and then creates a GitHub release with generated notes, marked as a pre-release when the tag contains `-`.
+
+```bash
+git tag 1.2.3 && git push origin 1.2.3
+```
+
+Both workflows read these secrets from the `cloudflare` GitHub environment (Settings > Environments):
+
+- `PULUMI_BACKEND_URL`: S3-compatible state bucket URL used by `infra/Pulumi.yaml`.
+- `PULUMI_CONFIG_PASSPHRASE`: decrypts the stack secrets.
+- `CLOUDFLARE_API_TOKEN`: lets the Pulumi Cloudflare provider manage the Worker, custom domains and redirect rules.
+- `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`: access keys for the state bucket.
+
 ## Contributing
 
 See [AGENTS.md](AGENTS.md) for architecture and code conventions. Lefthook formats staged files on commit and runs lint and tests on push.
