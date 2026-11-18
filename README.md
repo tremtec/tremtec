@@ -18,7 +18,7 @@ See [docs/mission_and_values.md](docs/mission_and_values.md) for the full missio
 
 - **Web**: Astro 7 (SSR on Cloudflare Workers), htmx, Tailwind CSS 4 + DaisyUI
 - **API**: Hono + Zod, mounted at `/api` (`src/pages/api/[...path].ts`)
-- **Auth**: GitHub and Google OAuth, session cookies (Cloudflare KV)
+- **Auth**: GitHub and Google OAuth, session cookie
 - **Infrastructure**: Pulumi + Cloudflare (`infra/`)
 - **Tooling**: Bun, Biome, Vitest, lefthook, mise
 
@@ -40,12 +40,13 @@ src/
 └── config.ts    # Environment validation
 infra/           # Pulumi program
 docs/            # Mission & values, board meeting notes
+.github/         # CI/CD workflows
 roadmap.md
 ```
 
 ## Getting Started
 
-Requires Node.js 22.23+ and [Bun](https://bun.sh). [mise](https://mise.jdx.dev) installs the toolchain.
+Requires Node.js 22.23.4+ and [Bun](https://bun.sh). [mise](https://mise.jdx.dev) installs Bun, Wrangler and Pulumi, and loads `.env`.
 
 ```bash
 mise install
@@ -65,7 +66,7 @@ bun run build      # Production build
 bun run lint       # Biome + astro check
 bun run fix        # Biome auto-fix
 bun run test       # Vitest
-bun w dev          # Run the Worker locally (wrangler)
+bun w dev          # Run the built Worker locally (wrangler), after bun run build
 ```
 
 ### Environment Variables
@@ -76,19 +77,24 @@ Validated in `src/config.ts`:
 - `GITHUB_ID`, `GITHUB_SECRET`: GitHub OAuth app
 - `GOOGLE_ID`, `GOOGLE_SECRET`: Google OAuth client
 
+Deployed Workers get them from Pulumi: `BASE_URL` from the stack's domain, the OAuth values from the stack's encrypted config (`infra/Pulumi.<stack>.yaml`).
+
+## CI/CD
+
+GitHub Actions runs three workflows from `.github/workflows/`:
+
+- **Quality Gateway** (`quality-gateway.yml`): lint, tests and build on pull requests to `main` and on pushes to `main`.
+- **Deploy** (`deploy.yml`): a push to `main` deploys the `dev` stack.
+- **Release** (`release.yml`): a tag `X.Y.Z` deploys the `production` stack and creates a GitHub release.
+
+Deploy and Release don't wait for Quality Gateway, so a push to `main` deploys `dev` even if lint or tests fail.
+
 ## Deployment
 
-Infrastructure is managed with Pulumi and requires `PULUMI_CONFIG_PASSPHRASE` and a Cloudflare API token.
-
-```bash
-cd infra
-bun run pulumi up --stack production
-```
-
-GitHub Actions deploys automatically:
+Infrastructure is managed with Pulumi (`infra/`), one stack per environment. Deploys normally run in GitHub Actions:
 
 - A push to `main` runs [`deploy.yml`](.github/workflows/deploy.yml), which builds the app and deploys the `dev` stack (`dev.tremtec.com`).
-- Pushing a tag like `1.2.3` runs [`release.yml`](.github/workflows/release.yml), which deploys the `production` stack (`tremtec.com`) and then creates a GitHub release with generated notes. Tags that contain a hyphen are ignored.
+- Pushing a tag `X.Y.Z` (no `v` prefix), like `1.2.3`, runs [`release.yml`](.github/workflows/release.yml), which builds and deploys the `production` stack (`tremtec.com`) and then creates a GitHub release with generated notes. Only tags that start with a digit and contain no hyphen run it, so `v1.2.3` and `1.2.3-rc` are ignored.
 
 ```bash
 git tag 1.2.3 && git push origin 1.2.3
@@ -100,6 +106,16 @@ Both workflows read these secrets from the `cloudflare` GitHub environment (Sett
 - `PULUMI_CONFIG_PASSPHRASE`: decrypts the stack secrets.
 - `CLOUDFLARE_API_TOKEN`: lets the Pulumi Cloudflare provider manage the Worker, custom domains and redirect rules.
 - `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`: access keys for the state bucket.
+
+### Manual deploy
+
+As a fallback, deploy from your machine with the same variables set (mise loads `.env`; the workflows also set `AWS_REGION=auto`). Build first, because `infra/index.ts` uploads the build output from `dist/`:
+
+```bash
+bun run build
+cd infra
+bun run pulumi up --stack production # or --stack dev
+```
 
 ## Contributing
 
