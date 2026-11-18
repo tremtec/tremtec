@@ -10,4 +10,6 @@ config:
     secure: v1:GqN7YUIeOQA9Me8J:HFxJVR1UIQOUep76R1X1m3X2pOB8Sg==
   tremtec-infra:google-secret:
     secure: v1:knpktllXcpol7Dwd:5dksa8plPbwW6VJfvYu4I6+5XUyu8A==
+  tremtec-infra:session-secret:
+    secure: v1:uSDq9+f7pqV0L8Vk:T5JH78rah9vQhDoXftQgqWNREyC8oWvOlYTaF9loMoxpXZNZRSKtyTGPY0HHxmnYhRh97O9+rZHFv6zi
 encryptionsalt: v1:eKPeaC58kZU=:v1:IRZCCGjmUqefFw7y:NZHFuj7AGvoz4YK0OdywnmIg3i9srg==

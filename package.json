@@ -12,6 +12,7 @@
     "fix": "biome check --write --unsafe .",
     "test": "vitest",
     "w": "wrangler",
+    "pulumi": "cd infra && pulumi",
     "generate-types": "wrangler types",
     "db:migrate": "wrangler d1 migrations apply DB --local",
     "db:seed": "wrangler d1 execute DB --local --file=scripts/seed.dev.sql"
