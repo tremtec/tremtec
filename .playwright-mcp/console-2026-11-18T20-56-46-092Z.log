@@ -1,3 +1,0 @@
-[     986ms] [LOG] [astro-mermaid] No mermaid diagrams found on initial load @ http://localhost:4401/@id/astro:scripts/page.js:3
-[    1970ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:4401/:1
-[    2027ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4401/favicon.ico:1
