@@ -1,6 +1,7 @@
 export const routes = {
   private: {
     dashboard: "/dashboard",
+    users: "/dashboard/users",
   },
   public: {
     home: "/",

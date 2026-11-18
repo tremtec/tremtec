@@ -1,17 +1,59 @@
 import { githubAuth } from "@hono/oauth-providers/github";
 import { googleAuth } from "@hono/oauth-providers/google";
-import { Hono } from "hono";
+import { type Context, Hono } from "hono";
 import { deleteCookie, setCookie } from "hono/cookie";
 import { config } from "~/config";
 import { SESSION_COOKIE_NAME } from "~/domain/auth/constants";
-import { sessionDataSchema } from "~/domain/auth/schema";
 import {
   extractOAuthUser,
   getSessionCookieConfig,
+  signSession,
 } from "~/domain/auth/service";
+import type { Provider } from "~/domain/shared/provider";
+import { isAdminEmail, signIn } from "~/domain/user/service";
+import type { AppEnv } from "./env";
 import { routes } from "./contants";
 
-export const auth = new Hono()
+const sessionCookieOptions = () => ({
+  ...getSessionCookieConfig(),
+  secure: Boolean(import.meta.env.PROD),
+});
+
+/**
+ * Stores the user, starts a signed session and redirects to the app.
+ * Suspended users are sent back to the login page instead.
+ */
+async function startSession(
+  c: Context<AppEnv>,
+  provider: Provider,
+  payload: Record<string, unknown> | undefined,
+  emailVerified: boolean,
+) {
+  const failed = `${routes.public.login}?error=${provider}_auth_failed`;
+  if (!payload) return c.redirect(failed);
+
+  const identity = extractOAuthUser(provider, payload);
+  if (!identity) return c.redirect(failed);
+
+  const user = await signIn(
+    c.env.DB,
+    identity,
+    isAdminEmail(identity.email, emailVerified),
+  );
+  if (user.status === "suspended") {
+    return c.redirect(`${routes.public.login}?error=suspended`);
+  }
+
+  setCookie(
+    c,
+    SESSION_COOKIE_NAME,
+    await signSession(user.id, config.SESSION_SECRET),
+    sessionCookieOptions(),
+  );
+  return c.redirect(routes.private.dashboard);
+}
+
+export const auth = new Hono<AppEnv>()
   .use(
     "/github",
     githubAuth({
@@ -22,35 +64,8 @@ export const auth = new Hono()
       oauthApp: false,
     }),
   )
-  .get("/github", (c) => {
-    const token = c.get("token");
-    const user = c.get("user-github");
-
-    if (!user || !token) {
-      return c.redirect(`${routes.public.login}?error=github_auth_failed`);
-    }
-
-    // Extract and normalize OAuth user data
-    const extractedUser = extractOAuthUser("github", user);
-    if (!extractedUser) {
-      return c.redirect(`${routes.public.login}?error=github_auth_failed`);
-    }
-
-    // Create session with validated user data
-    const sessionData = sessionDataSchema.parse({
-      user: extractedUser,
-      token: token.token,
-    });
-
-    const cookieConfig = getSessionCookieConfig();
-    setCookie(c, SESSION_COOKIE_NAME, JSON.stringify(sessionData), {
-      ...cookieConfig,
-      secure: Boolean(import.meta.env.PROD),
-      httpOnly: Boolean(import.meta.env.PROD),
-    });
-
-    return c.redirect(routes.private.dashboard);
-  })
+  // GitHub only exposes an email on the profile once the user verified it
+  .get("/github", (c) => startSession(c, "github", c.get("user-github"), true))
   .use(
     "/google",
     googleAuth({
@@ -61,41 +76,13 @@ export const auth = new Hono()
     }),
   )
   .get("/google", (c) => {
-    const token = c.get("token");
     const user = c.get("user-google");
-
-    if (!user || !token) {
-      return c.redirect(`${routes.public.login}?error=google_auth_failed`);
-    }
-
-    // Extract and normalize OAuth user data
-    const extractedUser = extractOAuthUser("google", user);
-    if (!extractedUser) {
-      return c.redirect(`${routes.public.login}?error=google_auth_failed`);
-    }
-
-    // Create session with validated user data
-    const sessionData = sessionDataSchema.parse({
-      user: extractedUser,
-      token: token.token,
-    });
-
-    const cookieConfig = getSessionCookieConfig();
-    setCookie(c, SESSION_COOKIE_NAME, JSON.stringify(sessionData), {
-      ...cookieConfig,
-      secure: Boolean(import.meta.env.PROD),
-      httpOnly: Boolean(import.meta.env.PROD),
-    });
-
-    return c.redirect(routes.private.dashboard);
+    return startSession(c, "google", user, user?.verified_email === true);
   })
   .get("/logout", (c) => {
-    const cookieConfig = getSessionCookieConfig();
     deleteCookie(c, SESSION_COOKIE_NAME, {
-      ...cookieConfig,
+      ...sessionCookieOptions(),
       maxAge: 0,
-      secure: Boolean(import.meta.env.PROD),
-      httpOnly: Boolean(import.meta.env.PROD),
     });
 
     return c.redirect(routes.public.login);

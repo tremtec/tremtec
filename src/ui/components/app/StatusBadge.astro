@@ -1,0 +1,19 @@
+---
+import type { Status } from "~/domain/user/schema";
+
+interface Props {
+  status: Status;
+}
+
+const { status } = Astro.props;
+const styles: Record<Status, string> = {
+  active: "bg-success/15 text-success",
+  pending: "bg-warning/20 text-warning",
+  suspended: "bg-error/15 text-error",
+};
+---
+
+<span class={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${styles[status]}`}>
+  <span class="size-1.5 rounded-full bg-current"></span>
+  {status}
+</span>

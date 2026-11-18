@@ -10,8 +10,9 @@ export const userSessionSchema = z.strictObject({
 });
 export type UserSession = z.infer<typeof userSessionSchema>;
 
-export const sessionDataSchema = z.strictObject({
-  user: userSessionSchema,
-  token: z.string(),
+/** Contents of the signed session cookie. The user itself is loaded from D1. */
+export const sessionPayloadSchema = z.strictObject({
+  uid: z.uuid(),
+  exp: z.number().int(), // unix seconds
 });
-export type SessionData = z.infer<typeof sessionDataSchema>;
+export type SessionPayload = z.infer<typeof sessionPayloadSchema>;

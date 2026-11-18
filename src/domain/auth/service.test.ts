@@ -3,6 +3,8 @@ import { MAX_SESSION_AGE, SESSION_COOKIE_NAME } from "~/domain/auth/constants";
 import {
   extractOAuthUser,
   getSessionCookieConfig,
+  signSession,
+  verifySession,
 } from "~/domain/auth/service";
 
 describe("Auth Service", () => {
@@ -109,5 +111,48 @@ describe("Auth Service", () => {
       expect(config1).toEqual(config2);
       expect(config1).not.toBe(config2);
     });
+  });
+});
+
+describe("signed sessions", () => {
+  const secret = "test-secret-that-is-at-least-32-chars";
+  const uid = "11111111-1111-4111-8111-111111111111";
+
+  it("round-trips a valid session", async () => {
+    const value = await signSession(uid, secret);
+    expect(await verifySession(value, secret)).toMatchObject({ uid });
+  });
+
+  it("rejects a different secret", async () => {
+    const value = await signSession(uid, secret);
+    expect(
+      await verifySession(value, "another-secret-that-is-32-chars!!"),
+    ).toBeNull();
+  });
+
+  it("rejects a tampered payload", async () => {
+    const [, signature] = (await signSession(uid, secret)).split(".");
+    const forged = btoa(JSON.stringify({ uid, exp: 9_999_999_999 })).replaceAll(
+      "=",
+      "",
+    );
+    expect(await verifySession(`${forged}.${signature}`, secret)).toBeNull();
+  });
+
+  it("rejects expired sessions", async () => {
+    const value = await signSession(
+      uid,
+      secret,
+      Date.now() - (MAX_SESSION_AGE + 60) * 1000,
+    );
+    expect(await verifySession(value, secret)).toBeNull();
+  });
+
+  it("rejects the old unsigned JSON cookie and garbage", async () => {
+    expect(
+      await verifySession(JSON.stringify({ user: {}, token: "x" }), secret),
+    ).toBeNull();
+    expect(await verifySession("a.b.c", secret)).toBeNull();
+    expect(await verifySession("", secret)).toBeNull();
   });
 });

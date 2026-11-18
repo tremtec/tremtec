@@ -11,6 +11,9 @@ const AppConfigSchema = z.object({
   GOOGLE_ID: z.string().min(1),
   GOOGLE_SECRET: z.string().min(1),
 
+  // signs session cookies, generate with `openssl rand -base64 32`
+  SESSION_SECRET: z.string().min(32),
+
   // optional
   NODE_ENV: z.string().optional().default("development"),
 });

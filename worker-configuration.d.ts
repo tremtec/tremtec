@@ -11,6 +11,7 @@ declare namespace Cloudflare {
     GITHUB_SECRET: string;
     GOOGLE_ID: string;
     GOOGLE_SECRET: string;
+    SESSION_SECRET: string;
     PULUMI_CONFIG_PASSPHRASE: string;
   }
   interface Env {
@@ -24,6 +25,7 @@ declare namespace Cloudflare {
     GOOGLE_SECRET: string;
     PULUMI_CONFIG_PASSPHRASE: string;
     SESSION?: KVNamespace;
+    DB: D1Database;
     EMAIL?: SendEmail;
     ASSETS?: Fetcher;
   }

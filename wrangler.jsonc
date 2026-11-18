@@ -28,6 +28,14 @@
       "id": "my-kv-id"
     }
   ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "tremtec",
+      "database_id": "my-d1-id",
+      "migrations_dir": "migrations"
+    }
+  ],
   "send_email": [
     {
       "name": "EMAIL",

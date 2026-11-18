@@ -1,5 +1,5 @@
 declare namespace App {
-  type CurrentUser = import("./domain/user/schema").UserSession;
+  type CurrentUser = import("./domain/user/schema").User;
 
   interface Locals {
     title: string;

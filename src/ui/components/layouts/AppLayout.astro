@@ -1,25 +1,39 @@
 ---
 import "~/ui/styles/global.css";
+import { Icon } from "astro-icon/components";
 import { routes } from "~/server/contants";
+import Avatar from "~/ui/components/app/Avatar.astro";
 import Logo from "~/ui/components/Logo.astro";
 import OpenGraph from "~/ui/components/OpenGraph.astro";
+import { dashboardContent } from "~/ui/contents/dashboard";
 import { landingContent } from "~/ui/contents/landing";
-
-const { navbar } = landingContent;
 
 interface Props {
   title?: string;
   description?: string;
+  /** Page heading shown in the top bar */
+  heading?: string;
 }
 
+const { navbar } = landingContent;
+const { nav, products } = dashboardContent;
 const { title = "TremTec", description = "TremTec Dashboard" } = Astro.props;
+const heading = Astro.props.heading ?? title;
+
+const user = Astro.locals.user;
+const isAdmin = user?.role === "admin" && user.status === "active";
+const pathname = Astro.url.pathname.replace(/\/$/, "");
+const isActive = (href: string) => pathname === href;
+
+const links = [...nav.workspace, ...(isAdmin ? nav.admin : [])];
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
@@ -29,91 +43,144 @@ const { title = "TremTec", description = "TremTec Dashboard" } = Astro.props;
   </head>
 
   <body class="min-h-screen bg-base-100 text-base-content antialiased">
-    <div class="flex h-screen overflow-hidden">
-      <!-- Sidebar -->
-      <aside
-        class="w-64 bg-base-200 border-r border-base-300 flex flex-col hidden md:flex"
-      >
-        <!-- Logo -->
-        <div class="p-4 border-b border-base-300">
-          <a
-            href={routes.public.home}
-            class="flex items-center gap-2 hover:opacity-80 transition-opacity"
+    <script>
+      import "htmx.org";
+    </script>
+
+    <!-- Ambient background -->
+    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
+      <div class="absolute -top-40 -left-32 size-[32rem] rounded-full bg-primary/20 blur-3xl"></div>
+      <div class="absolute top-1/3 -right-40 size-[28rem] rounded-full bg-secondary/10 blur-3xl"></div>
+      <div class="absolute -bottom-40 left-1/3 size-[26rem] rounded-full bg-accent/10 blur-3xl"></div>
+    </div>
+
+    <div class="drawer lg:drawer-open">
+      <input id="app-drawer" type="checkbox" class="drawer-toggle" />
+
+      <div class="drawer-content flex min-h-screen flex-col">
+        <!-- Top bar -->
+        <header
+          class="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-base-content/10 bg-base-100/70 px-4 backdrop-blur-xl sm:px-8"
+        >
+          <label
+            for="app-drawer"
+            class="btn btn-ghost btn-square btn-sm lg:hidden"
+            aria-label="Open menu"
           >
-            <Logo size={40} />
-            <span class="text-lg font-bold text-base-content">{navbar.logo}</span>
-          </a>
-        </div>
-
-        <!-- Navigation -->
-        <nav class="flex-1 px-4 py-6">
-          <div class="space-y-2">
-            <a
-              href={routes.public.home}
-              class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-base-300 transition-colors text-base-content"
-            >
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M3 12l2-3m0 0l7-4 7 4M5 9v10a1 1 0 001 1h12a1 1 0 001-1V9m-9 16l4-4m0 0l4 4m-4-4v4"
-                ></path>
-              </svg>
-              <span>Dashboard</span>
-            </a>
+            <Icon name="heroicons:bars-3" class="size-6" />
+          </label>
+          <div class="flex min-w-0 flex-1 items-center gap-2 text-sm">
+            <span class="hidden text-base-content/50 sm:inline">TremTec</span>
+            <Icon name="heroicons:chevron-right-20-solid" class="hidden size-4 text-base-content/30 sm:inline" />
+            <h1 class="truncate font-semibold">{heading}</h1>
           </div>
-        </nav>
-
-        <!-- User Section -->
-        <div class="p-4 border-t border-base-300">
-          <a
-            href={routes.public.logout}
-            class="btn btn-sm btn-outline w-full"
-          >
-            Sign Out
-          </a>
-        </div>
-      </aside>
-
-      <!-- Main Content -->
-      <div class="flex-1 flex flex-col overflow-hidden">
-        <!-- Top Navigation (Mobile + Desktop) -->
-        <header class="bg-base-100 border-b border-base-300 px-6 py-4">
-          <div class="flex items-center justify-between">
-            <!-- Mobile Menu Button -->
-            <button
-              class="md:hidden p-2 hover:bg-base-200 rounded-lg transition-colors"
-            >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4 6h16M4 12h16M4 18h16"></path>
-              </svg>
-            </button>
-
-            <div class="flex items-center gap-4">
-              <span class="text-sm text-base-content/60">{title}</span>
-            </div>
-          </div>
+          {
+            user && (
+              <div class="flex items-center gap-3">
+                <div class="hidden text-right leading-tight sm:block">
+                  <p class="text-sm font-medium">{user.name}</p>
+                  <p class="text-xs text-base-content/50">{user.email}</p>
+                </div>
+                <Avatar name={user.name} src={user.avatar} />
+              </div>
+            )
+          }
         </header>
 
-        <!-- Content Area -->
-        <main class="flex-1 overflow-y-auto p-6">
+        <main class="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-8">
           <slot />
         </main>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="drawer-side z-40">
+        <label for="app-drawer" aria-label="Close menu" class="drawer-overlay"></label>
+
+        <aside
+          class="flex min-h-full w-72 flex-col border-r border-base-content/10 bg-base-200/80 backdrop-blur-xl"
+        >
+          <a
+            href={routes.public.home}
+            class="flex h-16 items-center gap-3 border-b border-base-content/10 px-6 transition-opacity hover:opacity-80"
+          >
+            <Logo size={32} />
+            <span class="text-lg font-bold tracking-tight">{navbar.logo}</span>
+          </a>
+
+          <nav class="flex flex-1 flex-col gap-8 overflow-y-auto px-4 py-6">
+            <div>
+              <p class="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-base-content/40">
+                Workspace
+              </p>
+              <ul class="space-y-1">
+                {
+                  links.map((link) => (
+                    <li>
+                      <a
+                        href={link.href}
+                        aria-current={isActive(link.href) ? "page" : undefined}
+                        class={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
+                          isActive(link.href)
+                            ? "bg-primary text-primary-content shadow-lg shadow-primary/25"
+                            : "text-base-content/70 hover:bg-base-content/5 hover:text-base-content"
+                        }`}
+                      >
+                        <Icon name={link.icon} class="size-5" />
+                        {link.label}
+                      </a>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+
+            <div>
+              <p class="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-base-content/40">
+                Products
+              </p>
+              <ul class="space-y-1">
+                {
+                  products.map((product) => (
+                    <li>
+                      <span
+                        aria-disabled="true"
+                        class="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-base-content/50"
+                      >
+                        <Icon name={product.icon} class={`size-5 ${product.accent}`} />
+                        <span class="flex-1">{product.name}</span>
+                        <span class="rounded-full bg-base-content/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
+                          Soon
+                        </span>
+                      </span>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+          </nav>
+
+          {
+            user && (
+              <div class="border-t border-base-content/10 p-4">
+                <div class="flex items-center gap-3 rounded-xl bg-base-content/5 p-3">
+                  <Avatar name={user.name} src={user.avatar} />
+                  <div class="min-w-0 flex-1 leading-tight">
+                    <p class="truncate text-sm font-semibold">{user.name}</p>
+                    <p class="text-xs capitalize text-base-content/50">{user.role}</p>
+                  </div>
+                  <a
+                    href={routes.public.logout}
+                    class="btn btn-ghost btn-square btn-sm"
+                    aria-label="Sign out"
+                    title="Sign out"
+                  >
+                    <Icon name="heroicons:arrow-right-start-on-rectangle" class="size-5" />
+                  </a>
+                </div>
+              </div>
+            )
+          }
+        </aside>
       </div>
     </div>
   </body>

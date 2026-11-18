@@ -1,35 +1,132 @@
 ---
+import { env } from "cloudflare:workers";
+import { Icon } from "astro-icon/components";
+import { getMetrics, listUsers } from "~/domain/user/service";
+import { timeAgo } from "~/lib/format";
+import { routes } from "~/server/contants";
+import Avatar from "~/ui/components/app/Avatar.astro";
+import ProductCard from "~/ui/components/app/ProductCard.astro";
+import ProviderSplit from "~/ui/components/app/ProviderSplit.astro";
+import SignupsChart from "~/ui/components/app/SignupsChart.astro";
+import StatCard from "~/ui/components/app/StatCard.astro";
+import StatusBadge from "~/ui/components/app/StatusBadge.astro";
 import AppLayout from "~/ui/components/layouts/AppLayout.astro";
+import { dashboardContent } from "~/ui/contents/dashboard";
 
 export const prerender = false;
+
+const user = Astro.locals.user;
+if (!user) return Astro.redirect(routes.public.login);
+
+const isAdmin = user.role === "admin" && user.status === "active";
+const [metrics, recent] = isAdmin
+  ? await Promise.all([
+      getMetrics(env.DB),
+      listUsers(env.DB, { limit: 5, offset: 0 }),
+    ])
+  : [null, null];
+
+const firstName = user.name.split(" ")[0];
 ---
 
-<AppLayout title="Dashboard">
-  <div class="space-y-6">
-    <div>
-      <h1 class="text-3xl font-bold text-base-content">Welcome back!</h1>
-      <p class="text-base-content/60 mt-2">Here's what's happening with your projects.</p>
-    </div>
+<AppLayout title="Dashboard | TremTec" heading="Dashboard">
+  <div class="space-y-10">
+    <!-- Welcome -->
+    <section>
+      <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
+        Welcome back, <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">{firstName}</span>
+      </h2>
+      <p class="mt-2 text-base-content/60">
+        {isAdmin ? "Here's how your platform is doing today." : "Here's what we're building next."}
+      </p>
+    </section>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="card bg-base-200 shadow-sm">
-        <div class="card-body">
-          <p class="text-base-content/60 text-sm">Total Projects</p>
-          <p class="text-3xl font-bold text-base-content">0</p>
+    {
+      user.status === "pending" && (
+        <div role="alert" class="flex items-start gap-4 rounded-2xl border border-warning/30 bg-warning/10 p-5">
+          <Icon name="heroicons:clock" class="mt-0.5 size-6 shrink-0 text-warning" />
+          <div>
+            <p class="font-semibold">Your account is awaiting approval</p>
+            <p class="mt-1 text-sm text-base-content/70">
+              The TremTec team reviews every new account. We'll enable full access as soon as that's done.
+            </p>
+          </div>
         </div>
+      )
+    }
+
+    {
+      metrics && recent && (
+        <>
+          <!-- Metrics -->
+          <section class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Key metrics">
+            <StatCard label="Total users" value={metrics.total} hint={`${metrics.admins} admin${metrics.admins === 1 ? "" : "s"}`} icon="heroicons:users" />
+            <StatCard label="Active" value={metrics.active} hint="Can use the platform" icon="heroicons:check-badge" tone="success" />
+            <StatCard label="Pending approval" value={metrics.pending} hint={metrics.pending ? "Waiting for review" : "Nothing to review"} icon="heroicons:clock" tone="warning" />
+            <StatCard label="New this week" value={metrics.newThisWeek} hint={`${metrics.suspended} suspended`} icon="heroicons:sparkles" tone="primary" />
+          </section>
+
+          <!-- Charts -->
+          <section class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div class="rounded-2xl border border-base-content/10 bg-base-200/60 p-6 backdrop-blur lg:col-span-2">
+              <div class="mb-4 flex items-center justify-between">
+                <div>
+                  <h3 class="font-semibold">New users</h3>
+                  <p class="text-sm text-base-content/50">Last 14 days</p>
+                </div>
+                <span class="rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary">
+                  {metrics.signupsByDay.reduce((sum, d) => sum + d.count, 0)} total
+                </span>
+              </div>
+              <SignupsChart data={metrics.signupsByDay} />
+            </div>
+
+            <div class="rounded-2xl border border-base-content/10 bg-base-200/60 p-6 backdrop-blur">
+              <h3 class="font-semibold">Sign-in provider</h3>
+              <p class="mb-6 text-sm text-base-content/50">How people join</p>
+              <ProviderSplit github={metrics.byProvider.github} google={metrics.byProvider.google} />
+            </div>
+          </section>
+
+          <!-- Recent signups -->
+          <section class="rounded-2xl border border-base-content/10 bg-base-200/60 p-6 backdrop-blur">
+            <div class="mb-4 flex items-center justify-between">
+              <div>
+                <h3 class="font-semibold">Recent sign-ups</h3>
+                <p class="text-sm text-base-content/50">The latest people to join</p>
+              </div>
+              <a href={routes.private.users} class="btn btn-ghost btn-sm gap-1">
+                View all
+                <Icon name="heroicons:arrow-right-20-solid" class="size-4" />
+              </a>
+            </div>
+            <ul class="divide-y divide-base-content/10">
+              {recent.users.map((u) => (
+                <li class="flex items-center gap-4 py-3">
+                  <Avatar name={u.name} src={u.avatar} />
+                  <div class="min-w-0 flex-1">
+                    <p class="truncate text-sm font-medium">{u.name}</p>
+                    <p class="truncate text-xs text-base-content/50">{u.email}</p>
+                  </div>
+                  <span class="hidden text-xs text-base-content/40 sm:inline">{timeAgo(u.createdAt)}</span>
+                  <StatusBadge status={u.status} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        </>
+      )
+    }
+
+    <!-- Products -->
+    <section>
+      <div class="mb-5">
+        <h3 class="text-xl font-bold">On the roadmap</h3>
+        <p class="text-sm text-base-content/50">New products arriving on the platform</p>
       </div>
-      <div class="card bg-base-200 shadow-sm">
-        <div class="card-body">
-          <p class="text-base-content/60 text-sm">Active Tasks</p>
-          <p class="text-3xl font-bold text-base-content">0</p>
-        </div>
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+        {dashboardContent.products.map((product) => <ProductCard product={product} />)}
       </div>
-      <div class="card bg-base-200 shadow-sm">
-        <div class="card-body">
-          <p class="text-base-content/60 text-sm">Team Members</p>
-          <p class="text-3xl font-bold text-base-content">0</p>
-        </div>
-      </div>
-    </div>
+    </section>
   </div>
 </AppLayout>
