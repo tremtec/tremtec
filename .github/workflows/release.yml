@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - "*.*.*"
+      - "[0-9]*.[0-9]*.[0-9]*"
       - "!*-*"
 
 # Never cancel a running `pulumi up`: it leaves the stack locked with pending operations.
