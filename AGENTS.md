@@ -47,4 +47,5 @@ Auth uses GitHub and Google OAuth with HTTP-only session cookies (`src/domain/au
 - `astro check` does not support TypeScript 7 yet, so `typescript` stays on 6.x.
 - Pulumi packages are intentionally not upgraded with the rest (known to break).
 - Blog posts and products live in `src/content/`.
-- Pushing to `main` deploys the `dev` stack via `.github/workflows/deploy.yml`, and pushing a tag `X.Y.Z` (no `v` prefix; tags with a hyphen are ignored) deploys production via `.github/workflows/release.yml`. README "Deployment" lists the required secrets and the manual fallback.
+- Pull requests to `main` need the `Lint`, `Test` and `Build` checks (`.github/workflows/quality-gateway.yml`) and `Analyze (javascript-typescript)` (`.github/workflows/codeql.yml`).
+- Pushing to `main` deploys the `dev` stack via `.github/workflows/deploy.yml`, and pushing a tag `X.Y.Z` (numbers only, so not `v1.2.3` or `1.2.3-rc`) deploys production via `.github/workflows/release.yml`. README "Deployment" lists the required secrets and the manual fallback.

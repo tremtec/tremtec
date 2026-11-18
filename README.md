@@ -81,20 +81,21 @@ Deployed Workers get them from Pulumi: `BASE_URL` from the stack's domain, the O
 
 ## CI/CD
 
-GitHub Actions runs three workflows from `.github/workflows/`:
+GitHub Actions runs four workflows from `.github/workflows/`:
 
 - **Quality Gateway** (`quality-gateway.yml`): lint, tests and build on pull requests to `main` and on pushes to `main`.
+- **CodeQL** (`codeql.yml`): code scanning for JavaScript and TypeScript on pull requests to `main`, on pushes to `main` and weekly.
 - **Deploy** (`deploy.yml`): a push to `main` deploys the `dev` stack.
 - **Release** (`release.yml`): a tag `X.Y.Z` deploys the `production` stack and creates a GitHub release.
 
-Deploy and Release don't wait for Quality Gateway, so a push to `main` deploys `dev` even if lint or tests fail.
+The required checks for pull requests to `main` are `Lint`, `Test`, `Build` and `Analyze (javascript-typescript)`. Deploy and Release don't wait for Quality Gateway, so a push to `main` deploys `dev` even if lint or tests fail.
 
 ## Deployment
 
 Infrastructure is managed with Pulumi (`infra/`), one stack per environment. Deploys normally run in GitHub Actions:
 
 - A push to `main` runs [`deploy.yml`](.github/workflows/deploy.yml), which builds the app and deploys the `dev` stack (`dev.tremtec.com`).
-- Pushing a tag `X.Y.Z` (no `v` prefix), like `1.2.3`, runs [`release.yml`](.github/workflows/release.yml), which builds and deploys the `production` stack (`tremtec.com`) and then creates a GitHub release with generated notes. Only tags that start with a digit and contain no hyphen run it, so `v1.2.3` and `1.2.3-rc` are ignored.
+- Pushing a tag `X.Y.Z` where each part is a number, like `1.2.3`, runs [`release.yml`](.github/workflows/release.yml), which builds and deploys the `production` stack (`tremtec.com`) and then creates a GitHub release with generated notes. Other tags, such as `v1.2.3`, `1.2.3-rc` or `1.2.3.4`, are ignored.
 
 ```bash
 git tag 1.2.3 && git push origin 1.2.3
