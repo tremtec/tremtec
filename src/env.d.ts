@@ -1,9 +1,11 @@
 declare namespace App {
-  type CurrentUser = import("./domain/user/schema").UserSession;
+  type CurrentUser = import("./domain/user/schema").User;
 
   interface Locals {
     title: string;
     user: CurrentUser | undefined;
+    /** Request-scoped services, provided by the middleware. */
+    services: import("./server/services").Services;
   }
 }
 

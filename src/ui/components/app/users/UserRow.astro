@@ -1,0 +1,82 @@
+---
+import { Icon } from "astro-icon/components";
+import { roleEnum, statusEnum, type User } from "~/domain/user/schema";
+import { timeAgo } from "~/lib/format";
+import Avatar from "../Avatar.astro";
+
+interface Props {
+  user: User;
+  /** The signed-in admin: their own row is read-only */
+  isMe: boolean;
+}
+
+const { user, isMe } = Astro.props;
+const selectClass =
+  "select select-sm w-28 rounded-lg border-base-content/15 bg-base-100/60 capitalize";
+const endpoint = `/api/users/${user.id}`;
+---
+
+<tr class="border-base-content/10 transition-colors hover:bg-base-content/[0.03]">
+  <td class="pl-6">
+    <div class="flex items-center gap-3">
+      <Avatar name={user.name} src={user.avatar} />
+      <div class="min-w-0">
+        <p class="flex items-center gap-2 font-medium">
+          {user.name}
+          {isMe && <span class="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold uppercase text-primary">You</span>}
+        </p>
+        <p class="text-xs text-base-content/50">{user.email}</p>
+      </div>
+    </div>
+  </td>
+  <td>
+    <span class="inline-flex items-center gap-1.5 text-sm capitalize text-base-content/70">
+      <Icon name={user.provider === "github" ? "mdi:github" : "mdi:google"} class="size-4" />
+      {user.provider}
+    </span>
+  </td>
+  <td>
+    <select
+      name="role"
+      class={selectClass}
+      aria-label={`Role for ${user.name}`}
+      disabled={isMe}
+      hx-patch={endpoint}
+      hx-trigger="change"
+      hx-swap="none"
+    >
+      {roleEnum.options.map((r) => <option value={r} selected={user.role === r}>{r}</option>)}
+    </select>
+  </td>
+  <td>
+    <select
+      name="status"
+      class={selectClass}
+      aria-label={`Status for ${user.name}`}
+      disabled={isMe}
+      hx-patch={endpoint}
+      hx-trigger="change"
+      hx-swap="none"
+    >
+      {statusEnum.options.map((s) => <option value={s} selected={user.status === s}>{s}</option>)}
+    </select>
+  </td>
+  <td class="whitespace-nowrap text-sm text-base-content/60">{timeAgo(user.lastLoginAt)}</td>
+  <td class="pr-6 text-right">
+    {
+      !isMe && (
+        <button
+          type="button"
+          class="btn btn-ghost btn-square btn-sm text-base-content/50 hover:bg-error/10 hover:text-error"
+          aria-label={`Delete ${user.name}`}
+          title="Delete user"
+          hx-delete={endpoint}
+          hx-confirm={`Delete ${user.name}? They can sign up again, but will start as pending.`}
+          hx-swap="none"
+        >
+          <Icon name="heroicons:trash" class="size-4" />
+        </button>
+      )
+    }
+  </td>
+</tr>

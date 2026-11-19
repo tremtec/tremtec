@@ -1,0 +1,17 @@
+---
+import type { UserMetrics } from "~/domain/user/schema";
+import Panel from "./Panel.astro";
+import ProviderSplit from "./ProviderSplit.astro";
+
+interface Props {
+  byProvider: UserMetrics["byProvider"];
+}
+
+const { byProvider } = Astro.props;
+---
+
+<Panel title="Sign-in provider" subtitle="How people join">
+  <div class="mt-6">
+    <ProviderSplit github={byProvider.github} google={byProvider.google} />
+  </div>
+</Panel>

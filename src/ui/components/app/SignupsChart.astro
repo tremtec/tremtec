@@ -1,0 +1,90 @@
+---
+import { niceMax, smoothPath } from "~/lib/chart";
+import type { DailyCount } from "~/domain/user/schema";
+
+interface Props {
+  data: DailyCount[];
+}
+
+const { data } = Astro.props;
+
+const width = 640;
+const height = 240;
+const pad = { top: 16, right: 16, bottom: 32, left: 32 };
+const innerW = width - pad.left - pad.right;
+const innerH = height - pad.top - pad.bottom;
+
+const max = niceMax(Math.max(...data.map((d) => d.count)));
+const x = (i: number) => pad.left + (i / Math.max(data.length - 1, 1)) * innerW;
+const y = (v: number) => pad.top + innerH - (v / max) * innerH;
+
+const points = data.map((d, i) => ({ x: x(i), y: y(d.count) }));
+const line = smoothPath(points);
+const baseline = pad.top + innerH;
+const area = `${line} L${x(data.length - 1)},${baseline} L${x(0)},${baseline} Z`;
+
+const ticks = [0, 0.5, 1].map((t) => Math.round(max * t));
+const label = (iso: string) =>
+  new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  });
+const labelIndexes = [0, Math.floor((data.length - 1) / 2), data.length - 1];
+---
+
+<svg
+  viewBox={`0 0 ${width} ${height}`}
+  class="h-auto w-full text-primary"
+  role="img"
+  aria-label="New users per day over the last 14 days"
+>
+  <defs>
+    <linearGradient id="signups-fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="currentColor" stop-opacity="0.35"></stop>
+      <stop offset="100%" stop-color="currentColor" stop-opacity="0"></stop>
+    </linearGradient>
+  </defs>
+
+  {
+    ticks.map((t) => (
+      <g>
+        <line
+          x1={pad.left}
+          x2={width - pad.right}
+          y1={y(t)}
+          y2={y(t)}
+          class="stroke-base-content/10"
+          stroke-dasharray="4 4"
+        />
+        <text x={pad.left - 8} y={y(t) + 4} text-anchor="end" class="fill-base-content/40 text-[11px]">
+          {t}
+        </text>
+      </g>
+    ))
+  }
+
+  <path d={area} fill="url(#signups-fill)"></path>
+  <path d={line} fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+
+  {
+    data.map((d, i) => (
+      <circle cx={x(i)} cy={y(d.count)} r="4" class="fill-base-100 stroke-primary" stroke-width="2.5">
+        <title>{`${label(d.date)}: ${d.count} new ${d.count === 1 ? "user" : "users"}`}</title>
+      </circle>
+    ))
+  }
+
+  {
+    labelIndexes.map((i) => (
+      <text
+        x={x(i)}
+        y={height - 8}
+        text-anchor={i === 0 ? "start" : i === data.length - 1 ? "end" : "middle"}
+        class="fill-base-content/40 text-[11px]"
+      >
+        {label(data[i].date)}
+      </text>
+    ))
+  }
+</svg>

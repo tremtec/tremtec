@@ -12,7 +12,10 @@
     "fix": "biome check --write --unsafe .",
     "test": "vitest",
     "w": "wrangler",
-    "generate-types": "wrangler types"
+    "pulumi": "cd infra && pulumi",
+    "generate-types": "wrangler types",
+    "db:migrate": "wrangler d1 migrations apply DB --local",
+    "db:seed": "wrangler d1 execute DB --local --file=scripts/seed.dev.sql"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.12",

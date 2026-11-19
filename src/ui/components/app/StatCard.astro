@@ -1,0 +1,33 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  label: string;
+  value: number;
+  hint?: string;
+  icon: string;
+  tone?: "primary" | "success" | "warning" | "error";
+}
+
+const { label, value, hint, icon, tone = "primary" } = Astro.props;
+
+const tones = {
+  primary: "bg-primary/15 text-primary",
+  success: "bg-success/15 text-success",
+  warning: "bg-warning/20 text-warning",
+  error: "bg-error/15 text-error",
+};
+---
+
+<div
+  class="group relative overflow-hidden rounded-2xl border border-base-content/10 bg-base-200/60 p-5 shadow-sm backdrop-blur transition-all hover:-translate-y-0.5 hover:shadow-xl"
+>
+  <div class="flex items-start justify-between">
+    <p class="text-sm font-medium text-base-content/60">{label}</p>
+    <span class={`flex size-10 items-center justify-center rounded-xl ${tones[tone]}`}>
+      <Icon name={icon} class="size-5" />
+    </span>
+  </div>
+  <p class="mt-4 text-4xl font-bold tracking-tight tabular-nums">{value.toLocaleString("en-US")}</p>
+  {hint && <p class="mt-1 text-xs text-base-content/50">{hint}</p>}
+</div>

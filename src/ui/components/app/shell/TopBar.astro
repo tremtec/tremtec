@@ -1,0 +1,40 @@
+---
+import { Icon } from "astro-icon/components";
+import type { User } from "~/domain/user/schema";
+import Avatar from "../Avatar.astro";
+
+interface Props {
+  heading: string;
+  user?: User;
+  /** id of the checkbox that toggles the sidebar drawer */
+  drawerId: string;
+}
+
+const { heading, user, drawerId } = Astro.props;
+---
+
+<header
+  class="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-base-content/10 bg-base-100/70 px-4 backdrop-blur-xl sm:px-8"
+>
+  <label for={drawerId} class="btn btn-ghost btn-square btn-sm lg:hidden" aria-label="Open menu">
+    <Icon name="heroicons:bars-3" class="size-6" />
+  </label>
+
+  <div class="flex min-w-0 flex-1 items-center gap-2 text-sm">
+    <span class="hidden text-base-content/50 sm:inline">TremTec</span>
+    <Icon name="heroicons:chevron-right-20-solid" class="hidden size-4 text-base-content/30 sm:inline" />
+    <h1 class="truncate font-semibold">{heading}</h1>
+  </div>
+
+  {
+    user && (
+      <div class="flex items-center gap-3">
+        <div class="hidden text-right leading-tight sm:block">
+          <p class="text-sm font-medium">{user.name}</p>
+          <p class="text-xs text-base-content/50">{user.email}</p>
+        </div>
+        <Avatar name={user.name} src={user.avatar} />
+      </div>
+    )
+  }
+</header>

@@ -1,35 +1,47 @@
 ---
+import { isAdmin as hasAdminAccess, requireUser } from "~/lib/session";
+import MetricsGrid from "~/ui/components/app/MetricsGrid.astro";
+import PendingNotice from "~/ui/components/app/PendingNotice.astro";
+import ProductsSection from "~/ui/components/app/ProductsSection.astro";
+import ProviderCard from "~/ui/components/app/ProviderCard.astro";
+import RecentSignups from "~/ui/components/app/RecentSignups.astro";
+import SignupsCard from "~/ui/components/app/SignupsCard.astro";
+import WelcomeHeader from "~/ui/components/app/WelcomeHeader.astro";
 import AppLayout from "~/ui/components/layouts/AppLayout.astro";
 
 export const prerender = false;
+
+const user = requireUser(Astro.locals);
+const isAdmin = hasAdminAccess(user);
+
+// Only admins see platform numbers
+const { users } = Astro.locals.services;
+const [metrics, recent] = isAdmin
+  ? await Promise.all([
+      users.getMetrics(),
+      users.listUsers({ limit: 5, offset: 0 }),
+    ])
+  : [null, null];
 ---
 
-<AppLayout title="Dashboard">
-  <div class="space-y-6">
-    <div>
-      <h1 class="text-3xl font-bold text-base-content">Welcome back!</h1>
-      <p class="text-base-content/60 mt-2">Here's what's happening with your projects.</p>
-    </div>
+<AppLayout title="Dashboard | TremTec" heading="Dashboard">
+  <div class="space-y-10">
+    <WelcomeHeader name={user.name} isAdmin={isAdmin} />
+    {user.status === "pending" && <PendingNotice />}
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="card bg-base-200 shadow-sm">
-        <div class="card-body">
-          <p class="text-base-content/60 text-sm">Total Projects</p>
-          <p class="text-3xl font-bold text-base-content">0</p>
-        </div>
-      </div>
-      <div class="card bg-base-200 shadow-sm">
-        <div class="card-body">
-          <p class="text-base-content/60 text-sm">Active Tasks</p>
-          <p class="text-3xl font-bold text-base-content">0</p>
-        </div>
-      </div>
-      <div class="card bg-base-200 shadow-sm">
-        <div class="card-body">
-          <p class="text-base-content/60 text-sm">Team Members</p>
-          <p class="text-3xl font-bold text-base-content">0</p>
-        </div>
-      </div>
-    </div>
+    {
+      metrics && recent && (
+        <>
+          <MetricsGrid metrics={metrics} />
+          <section class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <SignupsCard data={metrics.signupsByDay} class="lg:col-span-2" />
+            <ProviderCard byProvider={metrics.byProvider} />
+          </section>
+          <RecentSignups users={recent.users} />
+        </>
+      )
+    }
+
+    <ProductsSection />
   </div>
 </AppLayout>

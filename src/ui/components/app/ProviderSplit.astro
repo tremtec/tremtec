@@ -1,0 +1,71 @@
+---
+interface Props {
+  github: number;
+  google: number;
+}
+
+const { github, google } = Astro.props;
+const total = github + google;
+
+const radius = 52;
+const circumference = 2 * Math.PI * radius;
+const segments = [
+  { name: "GitHub", value: github, color: "stroke-primary", dot: "bg-primary" },
+  {
+    name: "Google",
+    value: google,
+    color: "stroke-secondary",
+    dot: "bg-secondary",
+  },
+];
+
+let offset = 0;
+const arcs = segments.map((s) => {
+  const length = total ? (s.value / total) * circumference : 0;
+  const arc = { ...s, length, offset };
+  offset += length;
+  return arc;
+});
+---
+
+<div class="flex items-center gap-6">
+  <div class="relative shrink-0">
+    <svg viewBox="0 0 128 128" class="size-32 -rotate-90" role="img" aria-label="Sign-ins by provider">
+      <circle cx="64" cy="64" r={radius} fill="none" stroke-width="14" class="stroke-base-content/10"></circle>
+      {
+        arcs.map((a) => (
+          <circle
+            cx="64"
+            cy="64"
+            r={radius}
+            fill="none"
+            stroke-width="14"
+            stroke-linecap="butt"
+            class={a.color}
+            stroke-dasharray={`${a.length} ${circumference - a.length}`}
+            stroke-dashoffset={-a.offset}
+          />
+        ))
+      }
+    </svg>
+    <div class="absolute inset-0 flex flex-col items-center justify-center">
+      <span class="text-2xl font-bold tabular-nums">{total}</span>
+      <span class="text-[11px] text-base-content/50">users</span>
+    </div>
+  </div>
+
+  <ul class="flex-1 space-y-3">
+    {
+      segments.map((s) => (
+        <li class="flex items-center gap-3 text-sm">
+          <span class={`size-2.5 rounded-full ${s.dot}`}></span>
+          <span class="flex-1 text-base-content/70">{s.name}</span>
+          <span class="font-semibold tabular-nums">{s.value}</span>
+          <span class="w-10 text-right text-xs text-base-content/40">
+            {total ? Math.round((s.value / total) * 100) : 0}%
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+</div>

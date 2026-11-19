@@ -1,0 +1,59 @@
+---
+import { Icon } from "astro-icon/components";
+
+export interface NavItem {
+  label: string;
+  icon: string;
+  /** Items without a link are shown as "Soon" */
+  href?: string;
+  accent?: string;
+}
+
+interface Props {
+  title: string;
+  items: readonly NavItem[];
+  currentPath: string;
+}
+
+const { title, items, currentPath } = Astro.props;
+---
+
+<div>
+  <p class="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-base-content/40">{title}</p>
+  <ul class="space-y-1">
+    {
+      items.map((item) => {
+        const active = item.href === currentPath;
+        return (
+          <li>
+            {item.href ? (
+              <a
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                class={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
+                  active
+                    ? "bg-primary text-primary-content shadow-lg shadow-primary/25"
+                    : "text-base-content/70 hover:bg-base-content/5 hover:text-base-content"
+                }`}
+              >
+                <Icon name={item.icon} class="size-5" />
+                {item.label}
+              </a>
+            ) : (
+              <span
+                aria-disabled="true"
+                class="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-base-content/50"
+              >
+                <Icon name={item.icon} class={`size-5 ${item.accent ?? ""}`} />
+                <span class="flex-1">{item.label}</span>
+                <span class="rounded-full bg-base-content/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
+                  Soon
+                </span>
+              </span>
+            )}
+          </li>
+        );
+      })
+    }
+  </ul>
+</div>

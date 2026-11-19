@@ -1,5 +1,6 @@
 import { SESSION_COOKIE_NAME } from "~/domain/auth/constants";
-import { sessionDataSchema } from "~/domain/auth/schema";
+import { resolveSessionUser } from "~/domain/auth/service";
+import { isAdmin } from "~/lib/session";
 import { isPrivateRoute, routes } from "~/server/contants";
 import { defineMiddleware, sequence } from "astro:middleware";
 
@@ -13,25 +14,47 @@ const loggingMiddleware = defineMiddleware(async (context, next) => {
   return response;
 });
 
-// You can define other middleware functions (e.g., for auth) and chain them
+// Gives pages request-scoped services. Prerendered pages have no Worker env.
+const servicesMiddleware = defineMiddleware(async (context, next) => {
+  if (!context.isPrerendered) {
+    const { env } = await import("cloudflare:workers");
+    const { createServices } = await import("~/server/services");
+    context.locals.services = createServices(env.DB);
+  }
+
+  return next();
+});
+
 const authMiddleware = defineMiddleware(async (context, next) => {
   context.locals.title = "New title";
 
-  const sessionRawData = context.cookies.get(SESSION_COOKIE_NAME);
-  if (sessionRawData?.value) {
-    const possibleSession = JSON.parse(sessionRawData.value);
-    const session = sessionDataSchema.safeParse(possibleSession);
-    if (session.success) {
-      context.locals.user = session.data.user;
-    }
+  const pathname = context.url.pathname;
+  const needsSession =
+    isPrivateRoute(pathname) || pathname.startsWith(routes.public.login);
+
+  // Only hit the database where the session matters
+  if (needsSession) {
+    // Lazy: process.env does not exist while prerendering
+    const { config } = await import("~/config");
+    const user = await resolveSessionUser(
+      context.cookies.get(SESSION_COOKIE_NAME)?.value,
+      context.locals.services.users,
+      config.SESSION_SECRET,
+    );
+    context.locals.user = user ?? undefined;
   }
 
-  const pathname = context.url.pathname;
-  if (isPrivateRoute(pathname) && context.locals.user === undefined) {
+  const user = context.locals.user;
+
+  if (isPrivateRoute(pathname) && !user) {
     return context.redirect(routes.public.login);
   }
 
-  if (pathname.startsWith(routes.public.login) && context.locals.user) {
+  if (pathname.startsWith(routes.public.login) && user) {
+    return context.redirect(routes.private.dashboard);
+  }
+
+  if (pathname.startsWith(routes.private.users) && !isAdmin(user)) {
     return context.redirect(routes.private.dashboard);
   }
 
@@ -39,4 +62,8 @@ const authMiddleware = defineMiddleware(async (context, next) => {
 });
 
 // Export the sequence of middleware functions
-export const onRequest = sequence(loggingMiddleware, authMiddleware);
+export const onRequest = sequence(
+  loggingMiddleware,
+  servicesMiddleware,
+  authMiddleware,
+);

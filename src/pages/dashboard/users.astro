@@ -1,0 +1,69 @@
+---
+import { listUsersQuerySchema } from "~/domain/user/schema";
+import { requireUser } from "~/lib/session";
+import { routes } from "~/server/contants";
+import ErrorToast from "~/ui/components/app/users/ErrorToast.astro";
+import UserFilters from "~/ui/components/app/users/UserFilters.astro";
+import UsersTable from "~/ui/components/app/users/UsersTable.astro";
+import AppLayout from "~/ui/components/layouts/AppLayout.astro";
+
+export const prerender = false;
+
+const PAGE_SIZE = 10;
+
+const me = requireUser(Astro.locals);
+
+// Blank filters (the "All" options) arrive as empty strings
+const params = Object.fromEntries(
+  [...Astro.url.searchParams].filter(([, value]) => value !== ""),
+);
+const page = Math.max(1, Number(params.page) || 1);
+const parsed = listUsersQuerySchema.safeParse({
+  q: params.q,
+  role: params.role,
+  status: params.status,
+  limit: PAGE_SIZE,
+  offset: (page - 1) * PAGE_SIZE,
+});
+const query = parsed.success
+  ? parsed.data
+  : listUsersQuerySchema.parse({ limit: PAGE_SIZE });
+
+const { users, total } = await Astro.locals.services.users.listUsers(query);
+const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+const hrefFor = (n: number) => {
+  const next = new URLSearchParams(Astro.url.searchParams);
+  next.set("page", String(n));
+  return `${routes.private.users}?${next}`;
+};
+const hasFilters = Boolean(query.q || query.role || query.status);
+---
+
+<AppLayout title="Users | TremTec" heading="Users">
+  <div class="space-y-6">
+    <section class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h2 class="text-3xl font-bold tracking-tight">Users</h2>
+        <p class="mt-2 text-base-content/60">Approve new sign-ups, assign roles and suspend access.</p>
+      </div>
+      <p class="rounded-full bg-primary/15 px-4 py-1.5 text-sm font-semibold text-primary">
+        {total} {total === 1 ? "user" : "users"}{hasFilters ? " found" : ""}
+      </p>
+    </section>
+
+    <UserFilters query={query} />
+    <UsersTable
+      users={users}
+      currentUserId={me.id}
+      page={page}
+      pages={pages}
+      from={total === 0 ? 0 : query.offset + 1}
+      to={query.offset + users.length}
+      total={total}
+      hrefFor={hrefFor}
+    />
+  </div>
+
+  <ErrorToast />
+</AppLayout>

@@ -1,0 +1,20 @@
+---
+import type { DailyCount } from "~/domain/user/schema";
+import Panel from "./Panel.astro";
+import SignupsChart from "./SignupsChart.astro";
+
+interface Props {
+  data: DailyCount[];
+  class?: string;
+}
+
+const { data, class: className } = Astro.props;
+const total = data.reduce((sum, d) => sum + d.count, 0);
+---
+
+<Panel title="New users" subtitle="Last 14 days" class={className}>
+  <span slot="action" class="rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary">
+    {total} total
+  </span>
+  <SignupsChart data={data} />
+</Panel>
