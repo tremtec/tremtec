@@ -1,5 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
+import { formatNumber } from "~/lib/format";
+import { usersContent } from "~/ui/contents/users";
 
 interface Props {
   page: number;
@@ -12,25 +14,28 @@ interface Props {
 }
 
 const { page, pages, from, to, total, hrefFor } = Astro.props;
+const locale = Astro.locals.locale;
+const { pagination } = usersContent[locale];
+const n = (value: number) => formatNumber(value, locale);
 ---
 
 <div class="flex items-center justify-between border-t border-base-content/10 px-6 py-3 text-sm text-base-content/60">
-  <span>Showing {from}–{to} of {total}</span>
+  <span>{pagination.showing(n(from), n(to), n(total))}</span>
   <div class="join">
     <a
       href={hrefFor(page - 1)}
       class={`btn btn-sm join-item ${page <= 1 ? "btn-disabled" : ""}`}
       aria-disabled={page <= 1}
-      aria-label="Previous page"
+      aria-label={pagination.previous}
     >
       <Icon name="heroicons:chevron-left-20-solid" class="size-4" />
     </a>
-    <span class="btn btn-sm join-item pointer-events-none">{page} / {pages}</span>
+    <span class="btn btn-sm join-item pointer-events-none">{n(page)} / {n(pages)}</span>
     <a
       href={hrefFor(page + 1)}
       class={`btn btn-sm join-item ${page >= pages ? "btn-disabled" : ""}`}
       aria-disabled={page >= pages}
-      aria-label="Next page"
+      aria-label={pagination.next}
     >
       <Icon name="heroicons:chevron-right-20-solid" class="size-4" />
     </a>

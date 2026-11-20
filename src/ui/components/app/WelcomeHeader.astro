@@ -1,4 +1,6 @@
 ---
+import { dashboardContent } from "~/ui/contents/dashboard";
+
 interface Props {
   name: string;
   isAdmin: boolean;
@@ -6,13 +8,14 @@ interface Props {
 
 const { name, isAdmin } = Astro.props;
 const firstName = name.split(" ")[0];
+const { welcome } = dashboardContent[Astro.locals.locale];
 ---
 
 <section>
   <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
-    Welcome back, <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">{firstName}</span>
+    {welcome.greeting} <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">{firstName}</span>
   </h2>
   <p class="mt-2 text-base-content/60">
-    {isAdmin ? "Here's how your platform is doing today." : "Here's what we're building next."}
+    {isAdmin ? welcome.admin : welcome.user}
   </p>
 </section>

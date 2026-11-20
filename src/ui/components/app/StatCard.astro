@@ -1,5 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
+import { formatNumber } from "~/lib/format";
 
 interface Props {
   label: string;
@@ -28,6 +29,6 @@ const tones = {
       <Icon name={icon} class="size-5" />
     </span>
   </div>
-  <p class="mt-4 text-4xl font-bold tracking-tight tabular-nums">{value.toLocaleString("en-US")}</p>
+  <p class="mt-4 text-4xl font-bold tracking-tight tabular-nums">{formatNumber(value, Astro.locals.locale)}</p>
   {hint && <p class="mt-1 text-xs text-base-content/50">{hint}</p>}
 </div>

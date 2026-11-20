@@ -1,0 +1,22 @@
+---
+import { Icon } from "astro-icon/components";
+import { LOCALE_INFO, LOCALES } from "~/domain/shared/locale";
+import { dashboardContent } from "~/ui/contents/dashboard";
+
+const current = Astro.locals.locale;
+const { shell } = dashboardContent[current];
+---
+
+<label class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-base-content/70">
+  <Icon name="heroicons:language" class="size-5 shrink-0" />
+  <span class="sr-only">{shell.language}</span>
+  <select
+    name="locale"
+    class="select select-sm w-full rounded-lg border-base-content/15 bg-base-100/60"
+    hx-patch="/api/me"
+    hx-trigger="change"
+    hx-swap="none"
+  >
+    {LOCALES.map((l) => <option value={l} lang={LOCALE_INFO[l].tag} selected={l === current}>{LOCALE_INFO[l].label}</option>)}
+  </select>
+</label>

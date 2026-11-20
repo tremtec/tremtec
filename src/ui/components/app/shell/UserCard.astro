@@ -2,6 +2,7 @@
 import { Icon } from "astro-icon/components";
 import type { User } from "~/domain/user/schema";
 import { routes } from "~/server/contants";
+import { dashboardContent } from "~/ui/contents/dashboard";
 import Avatar from "../Avatar.astro";
 
 interface Props {
@@ -9,6 +10,7 @@ interface Props {
 }
 
 const { user } = Astro.props;
+const { roles, shell } = dashboardContent[Astro.locals.locale];
 ---
 
 <div class="border-t border-base-content/10 p-4">
@@ -16,9 +18,9 @@ const { user } = Astro.props;
     <Avatar name={user.name} src={user.avatar} />
     <div class="min-w-0 flex-1 leading-tight">
       <p class="truncate text-sm font-semibold">{user.name}</p>
-      <p class="text-xs capitalize text-base-content/50">{user.role}</p>
+      <p class="text-xs text-base-content/50">{roles[user.role]}</p>
     </div>
-    <a href={routes.public.logout} class="btn btn-ghost btn-square btn-sm" aria-label="Sign out" title="Sign out">
+    <a href={routes.public.logout} class="btn btn-ghost btn-square btn-sm" aria-label={shell.signOut} title={shell.signOut}>
       <Icon name="heroicons:arrow-right-start-on-rectangle" class="size-5" />
     </a>
   </div>

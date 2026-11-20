@@ -1,11 +1,13 @@
 ---
 import type { Status } from "~/domain/user/schema";
+import { dashboardContent } from "~/ui/contents/dashboard";
 
 interface Props {
   status: Status;
 }
 
 const { status } = Astro.props;
+const { statuses } = dashboardContent[Astro.locals.locale];
 const styles: Record<Status, string> = {
   active: "bg-success/15 text-success",
   pending: "bg-warning/20 text-warning",
@@ -13,7 +15,7 @@ const styles: Record<Status, string> = {
 };
 ---
 
-<span class={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${styles[status]}`}>
+<span class={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${styles[status]}`}>
   <span class="size-1.5 rounded-full bg-current"></span>
-  {status}
+  {statuses[status]}
 </span>

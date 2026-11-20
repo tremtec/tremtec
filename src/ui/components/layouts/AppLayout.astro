@@ -1,10 +1,13 @@
 ---
 import "~/ui/styles/global.css";
+import { LOCALE_INFO } from "~/domain/shared/locale";
 import { isAdmin } from "~/lib/session";
 import AmbientBackground from "~/ui/components/app/shell/AmbientBackground.astro";
 import Sidebar from "~/ui/components/app/shell/Sidebar.astro";
 import TopBar from "~/ui/components/app/shell/TopBar.astro";
+import ErrorToast from "~/ui/components/app/users/ErrorToast.astro";
 import OpenGraph from "~/ui/components/OpenGraph.astro";
+import { dashboardContent } from "~/ui/contents/dashboard";
 
 interface Props {
   title?: string;
@@ -15,7 +18,10 @@ interface Props {
 
 const DRAWER_ID = "app-drawer";
 
-const { title = "TremTec", description = "TremTec Dashboard" } = Astro.props;
+const locale = Astro.locals.locale;
+const { metadata, shell } = dashboardContent[locale];
+
+const { title = "TremTec", description = metadata.description } = Astro.props;
 const heading = Astro.props.heading ?? title;
 
 const user = Astro.locals.user;
@@ -23,7 +29,7 @@ const currentPath = Astro.url.pathname.replace(/\/$/, "");
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={LOCALE_INFO[locale].tag}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -54,9 +60,11 @@ const currentPath = Astro.url.pathname.replace(/\/$/, "");
       </div>
 
       <div class="drawer-side z-40">
-        <label for={DRAWER_ID} aria-label="Close menu" class="drawer-overlay"></label>
+        <label for={DRAWER_ID} aria-label={shell.closeMenu} class="drawer-overlay"></label>
         <Sidebar user={user} isAdmin={isAdmin(user)} currentPath={currentPath} />
       </div>
     </div>
+
+    <ErrorToast />
   </body>
 </html>

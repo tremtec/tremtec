@@ -1,12 +1,16 @@
 ---
-import { niceMax, smoothPath } from "~/lib/chart";
 import type { DailyCount } from "~/domain/user/schema";
+import { niceMax, smoothPath } from "~/lib/chart";
+import { formatDate, plural } from "~/lib/format";
+import { dashboardContent } from "~/ui/contents/dashboard";
 
 interface Props {
   data: DailyCount[];
 }
 
 const { data } = Astro.props;
+const locale = Astro.locals.locale;
+const { signups } = dashboardContent[locale];
 
 const width = 640;
 const height = 240;
@@ -25,11 +29,7 @@ const area = `${line} L${x(data.length - 1)},${baseline} L${x(0)},${baseline} Z`
 
 const ticks = [0, 0.5, 1].map((t) => Math.round(max * t));
 const label = (iso: string) =>
-  new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    timeZone: "UTC",
-  });
+  formatDate(iso, locale, { month: "short", day: "numeric" });
 const labelIndexes = [0, Math.floor((data.length - 1) / 2), data.length - 1];
 ---
 
@@ -37,7 +37,7 @@ const labelIndexes = [0, Math.floor((data.length - 1) / 2), data.length - 1];
   viewBox={`0 0 ${width} ${height}`}
   class="h-auto w-full text-primary"
   role="img"
-  aria-label="New users per day over the last 14 days"
+  aria-label={signups.chartLabel}
 >
   <defs>
     <linearGradient id="signups-fill" x1="0" y1="0" x2="0" y2="1">
@@ -70,7 +70,7 @@ const labelIndexes = [0, Math.floor((data.length - 1) / 2), data.length - 1];
   {
     data.map((d, i) => (
       <circle cx={x(i)} cy={y(d.count)} r="4" class="fill-base-100 stroke-primary" stroke-width="2.5">
-        <title>{`${label(d.date)}: ${d.count} new ${d.count === 1 ? "user" : "users"}`}</title>
+        <title>{`${label(d.date)}: ${plural(d.count, locale, signups.point)}`}</title>
       </circle>
     ))
   }

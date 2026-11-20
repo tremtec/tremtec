@@ -1,5 +1,7 @@
 ---
 import type { DailyCount } from "~/domain/user/schema";
+import { formatNumber } from "~/lib/format";
+import { dashboardContent } from "~/ui/contents/dashboard";
 import Panel from "./Panel.astro";
 import SignupsChart from "./SignupsChart.astro";
 
@@ -9,12 +11,14 @@ interface Props {
 }
 
 const { data, class: className } = Astro.props;
+const locale = Astro.locals.locale;
+const { signups } = dashboardContent[locale];
 const total = data.reduce((sum, d) => sum + d.count, 0);
 ---
 
-<Panel title="New users" subtitle="Last 14 days" class={className}>
+<Panel title={signups.title} subtitle={signups.subtitle} class={className}>
   <span slot="action" class="rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary">
-    {total} total
+    {signups.total(formatNumber(total, locale))}
   </span>
   <SignupsChart data={data} />
 </Panel>

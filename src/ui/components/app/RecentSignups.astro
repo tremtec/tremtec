@@ -3,6 +3,7 @@ import { Icon } from "astro-icon/components";
 import type { User } from "~/domain/user/schema";
 import { timeAgo } from "~/lib/format";
 import { routes } from "~/server/contants";
+import { dashboardContent } from "~/ui/contents/dashboard";
 import Avatar from "./Avatar.astro";
 import Panel from "./Panel.astro";
 import StatusBadge from "./StatusBadge.astro";
@@ -12,11 +13,13 @@ interface Props {
 }
 
 const { users } = Astro.props;
+const locale = Astro.locals.locale;
+const { recent } = dashboardContent[locale];
 ---
 
-<Panel title="Recent sign-ups" subtitle="The latest people to join">
+<Panel title={recent.title} subtitle={recent.subtitle}>
   <a slot="action" href={routes.private.users} class="btn btn-ghost btn-sm gap-1">
-    View all
+    {recent.viewAll}
     <Icon name="heroicons:arrow-right-20-solid" class="size-4" />
   </a>
   <ul class="divide-y divide-base-content/10">
@@ -28,7 +31,7 @@ const { users } = Astro.props;
             <p class="truncate text-sm font-medium">{u.name}</p>
             <p class="truncate text-xs text-base-content/50">{u.email}</p>
           </div>
-          <span class="hidden text-xs text-base-content/40 sm:inline">{timeAgo(u.createdAt)}</span>
+          <span class="hidden text-xs text-base-content/40 sm:inline">{timeAgo(u.createdAt, locale)}</span>
           <StatusBadge status={u.status} />
         </li>
       ))

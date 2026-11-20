@@ -1,8 +1,10 @@
 import type { Dictionary } from "~/lib/i18n";
-import { en } from "./en";
+import { en, type UsersContent } from "./en";
 import { ptBr } from "./pt-br";
 
-export const usersContent: Dictionary<typeof en> = {
+export type { UsersContent } from "./en";
+
+export const usersContent: Dictionary<UsersContent> = {
   en,
   "pt-br": ptBr,
 };

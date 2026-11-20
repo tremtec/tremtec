@@ -1,13 +1,14 @@
 ---
 import { Icon } from "astro-icon/components";
+import { dashboardContent } from "~/ui/contents/dashboard";
+
+const { pending } = dashboardContent[Astro.locals.locale];
 ---
 
 <div role="alert" class="flex items-start gap-4 rounded-2xl border border-warning/30 bg-warning/10 p-5">
   <Icon name="heroicons:clock" class="mt-0.5 size-6 shrink-0 text-warning" />
   <div>
-    <p class="font-semibold">Your account is awaiting approval</p>
-    <p class="mt-1 text-sm text-base-content/70">
-      The TremTec team reviews every new account. We'll enable full access as soon as that's done.
-    </p>
+    <p class="font-semibold">{pending.title}</p>
+    <p class="mt-1 text-sm text-base-content/70">{pending.body}</p>
   </div>
 </div>

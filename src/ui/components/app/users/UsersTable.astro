@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import type { User } from "~/domain/user/schema";
+import { usersContent } from "~/ui/contents/users";
 import Pagination from "./Pagination.astro";
 import UserRow from "./UserRow.astro";
 
@@ -16,6 +17,7 @@ interface Props {
 }
 
 const { users, currentUserId, ...pagination } = Astro.props;
+const { table } = usersContent[Astro.locals.locale];
 ---
 
 <div class="overflow-hidden rounded-2xl border border-base-content/10 bg-base-200/60 backdrop-blur">
@@ -23,12 +25,12 @@ const { users, currentUserId, ...pagination } = Astro.props;
     <table class="table min-w-[52rem]">
       <thead>
         <tr class="border-base-content/10 text-xs uppercase tracking-wider text-base-content/50">
-          <th class="pl-6">User</th>
-          <th>Provider</th>
-          <th>Role</th>
-          <th>Status</th>
-          <th>Last active</th>
-          <th class="pr-6"><span class="sr-only">Actions</span></th>
+          <th class="pl-6">{table.user}</th>
+          <th>{table.provider}</th>
+          <th>{table.role}</th>
+          <th>{table.status}</th>
+          <th>{table.lastActive}</th>
+          <th class="pr-6"><span class="sr-only">{table.actions}</span></th>
         </tr>
       </thead>
       <tbody>
@@ -43,8 +45,8 @@ const { users, currentUserId, ...pagination } = Astro.props;
         <span class="flex size-14 items-center justify-center rounded-2xl bg-base-content/5">
           <Icon name="heroicons:users" class="size-7 text-base-content/40" />
         </span>
-        <p class="font-semibold">No users found</p>
-        <p class="text-sm text-base-content/50">Try a different search or clear the filters.</p>
+        <p class="font-semibold">{table.empty.title}</p>
+        <p class="text-sm text-base-content/50">{table.empty.hint}</p>
       </div>
     )
   }

@@ -1,6 +1,8 @@
 ---
 import { Icon } from "astro-icon/components";
 import type { User } from "~/domain/user/schema";
+import { dashboardContent } from "~/ui/contents/dashboard";
+import { landingContent } from "~/ui/contents/landing";
 import Avatar from "../Avatar.astro";
 
 interface Props {
@@ -11,17 +13,19 @@ interface Props {
 }
 
 const { heading, user, drawerId } = Astro.props;
+const locale = Astro.locals.locale;
+const { shell } = dashboardContent[locale];
 ---
 
 <header
   class="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-base-content/10 bg-base-100/70 px-4 backdrop-blur-xl sm:px-8"
 >
-  <label for={drawerId} class="btn btn-ghost btn-square btn-sm lg:hidden" aria-label="Open menu">
+  <label for={drawerId} class="btn btn-ghost btn-square btn-sm lg:hidden" aria-label={shell.openMenu}>
     <Icon name="heroicons:bars-3" class="size-6" />
   </label>
 
   <div class="flex min-w-0 flex-1 items-center gap-2 text-sm">
-    <span class="hidden text-base-content/50 sm:inline">TremTec</span>
+    <span class="hidden text-base-content/50 sm:inline">{landingContent[locale].navbar.logo}</span>
     <Icon name="heroicons:chevron-right-20-solid" class="hidden size-4 text-base-content/30 sm:inline" />
     <h1 class="truncate font-semibold">{heading}</h1>
   </div>

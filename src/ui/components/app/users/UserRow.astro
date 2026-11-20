@@ -2,6 +2,8 @@
 import { Icon } from "astro-icon/components";
 import { roleEnum, statusEnum, type User } from "~/domain/user/schema";
 import { timeAgo } from "~/lib/format";
+import { dashboardContent } from "~/ui/contents/dashboard";
+import { usersContent } from "~/ui/contents/users";
 import Avatar from "../Avatar.astro";
 
 interface Props {
@@ -11,8 +13,11 @@ interface Props {
 }
 
 const { user, isMe } = Astro.props;
+const locale = Astro.locals.locale;
+const { table } = usersContent[locale];
+const { roles, statuses, providers } = dashboardContent[locale];
 const selectClass =
-  "select select-sm w-28 rounded-lg border-base-content/15 bg-base-100/60 capitalize";
+  "select select-sm w-40 rounded-lg border-base-content/15 bg-base-100/60";
 const endpoint = `/api/users/${user.id}`;
 ---
 
@@ -23,55 +28,55 @@ const endpoint = `/api/users/${user.id}`;
       <div class="min-w-0">
         <p class="flex items-center gap-2 font-medium">
           {user.name}
-          {isMe && <span class="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold uppercase text-primary">You</span>}
+          {isMe && <span class="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold uppercase text-primary">{table.you}</span>}
         </p>
         <p class="text-xs text-base-content/50">{user.email}</p>
       </div>
     </div>
   </td>
   <td>
-    <span class="inline-flex items-center gap-1.5 text-sm capitalize text-base-content/70">
+    <span class="inline-flex items-center gap-1.5 text-sm text-base-content/70">
       <Icon name={user.provider === "github" ? "mdi:github" : "mdi:google"} class="size-4" />
-      {user.provider}
+      {providers[user.provider]}
     </span>
   </td>
   <td>
     <select
       name="role"
       class={selectClass}
-      aria-label={`Role for ${user.name}`}
+      aria-label={table.roleFor(user.name)}
       disabled={isMe}
       hx-patch={endpoint}
       hx-trigger="change"
       hx-swap="none"
     >
-      {roleEnum.options.map((r) => <option value={r} selected={user.role === r}>{r}</option>)}
+      {roleEnum.options.map((r) => <option value={r} selected={user.role === r}>{roles[r]}</option>)}
     </select>
   </td>
   <td>
     <select
       name="status"
       class={selectClass}
-      aria-label={`Status for ${user.name}`}
+      aria-label={table.statusFor(user.name)}
       disabled={isMe}
       hx-patch={endpoint}
       hx-trigger="change"
       hx-swap="none"
     >
-      {statusEnum.options.map((s) => <option value={s} selected={user.status === s}>{s}</option>)}
+      {statusEnum.options.map((s) => <option value={s} selected={user.status === s}>{statuses[s]}</option>)}
     </select>
   </td>
-  <td class="whitespace-nowrap text-sm text-base-content/60">{timeAgo(user.lastLoginAt)}</td>
+  <td class="whitespace-nowrap text-sm text-base-content/60">{timeAgo(user.lastLoginAt, locale)}</td>
   <td class="pr-6 text-right">
     {
       !isMe && (
         <button
           type="button"
           class="btn btn-ghost btn-square btn-sm text-base-content/50 hover:bg-error/10 hover:text-error"
-          aria-label={`Delete ${user.name}`}
-          title="Delete user"
+          aria-label={table.deleteLabel(user.name)}
+          title={table.deleteTitle}
           hx-delete={endpoint}
-          hx-confirm={`Delete ${user.name}? They can sign up again, but will start as pending.`}
+          hx-confirm={table.deleteConfirm(user.name)}
           hx-swap="none"
         >
           <Icon name="heroicons:trash" class="size-4" />

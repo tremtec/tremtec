@@ -1,5 +1,6 @@
 ---
 import type { UserMetrics } from "~/domain/user/schema";
+import { dashboardContent } from "~/ui/contents/dashboard";
 import Panel from "./Panel.astro";
 import ProviderSplit from "./ProviderSplit.astro";
 
@@ -8,9 +9,10 @@ interface Props {
 }
 
 const { byProvider } = Astro.props;
+const { provider } = dashboardContent[Astro.locals.locale];
 ---
 
-<Panel title="Sign-in provider" subtitle="How people join">
+<Panel title={provider.title} subtitle={provider.subtitle}>
   <div class="mt-6">
     <ProviderSplit github={byProvider.github} google={byProvider.google} />
   </div>

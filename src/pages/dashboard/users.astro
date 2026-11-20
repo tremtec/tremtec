@@ -1,17 +1,20 @@
 ---
 import { listUsersQuerySchema } from "~/domain/user/schema";
+import { plural } from "~/lib/format";
 import { requireUser } from "~/lib/session";
 import { routes } from "~/server/contants";
-import ErrorToast from "~/ui/components/app/users/ErrorToast.astro";
 import UserFilters from "~/ui/components/app/users/UserFilters.astro";
 import UsersTable from "~/ui/components/app/users/UsersTable.astro";
 import AppLayout from "~/ui/components/layouts/AppLayout.astro";
+import { usersContent } from "~/ui/contents/users";
 
 export const prerender = false;
 
 const PAGE_SIZE = 10;
 
 const me = requireUser(Astro.locals);
+const locale = Astro.locals.locale;
+const { page: content } = usersContent[locale];
 
 // Blank filters (the "All" options) arrive as empty strings
 const params = Object.fromEntries(
@@ -40,15 +43,15 @@ const hrefFor = (n: number) => {
 const hasFilters = Boolean(query.q || query.role || query.status);
 ---
 
-<AppLayout title="Users | TremTec" heading="Users">
+<AppLayout title={content.title} heading={content.heading}>
   <div class="space-y-6">
     <section class="flex flex-wrap items-end justify-between gap-4">
       <div>
-        <h2 class="text-3xl font-bold tracking-tight">Users</h2>
-        <p class="mt-2 text-base-content/60">Approve new sign-ups, assign roles and suspend access.</p>
+        <h2 class="text-3xl font-bold tracking-tight">{content.heading}</h2>
+        <p class="mt-2 text-base-content/60">{content.subtitle}</p>
       </div>
       <p class="rounded-full bg-primary/15 px-4 py-1.5 text-sm font-semibold text-primary">
-        {total} {total === 1 ? "user" : "users"}{hasFilters ? " found" : ""}
+        {plural(total, locale, hasFilters ? content.countFiltered : content.count)}
       </p>
     </section>
 
@@ -64,6 +67,4 @@ const hasFilters = Boolean(query.q || query.role || query.status);
       hrefFor={hrefFor}
     />
   </div>
-
-  <ErrorToast />
 </AppLayout>

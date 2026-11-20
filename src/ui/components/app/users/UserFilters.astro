@@ -6,15 +6,20 @@ import {
   statusEnum,
 } from "~/domain/user/schema";
 import { routes } from "~/server/contants";
+import { dashboardContent } from "~/ui/contents/dashboard";
+import { usersContent } from "~/ui/contents/users";
 
 interface Props {
   query: ListUsersQuery;
 }
 
 const { query } = Astro.props;
+const locale = Astro.locals.locale;
+const { filters } = usersContent[locale];
+const { roles, statuses } = dashboardContent[locale];
 const hasFilters = Boolean(query.q || query.role || query.status);
 const selectClass =
-  "select select-sm w-28 rounded-lg border-base-content/15 bg-base-100/60 capitalize";
+  "select select-sm w-40 rounded-lg border-base-content/15 bg-base-100/60";
 ---
 
 <form
@@ -23,16 +28,16 @@ const selectClass =
 >
   <label class="input input-sm flex min-w-56 flex-1 items-center gap-2 rounded-lg border-base-content/15 bg-base-100/60">
     <Icon name="heroicons:magnifying-glass" class="size-4 text-base-content/40" />
-    <input type="search" name="q" value={query.q ?? ""} placeholder="Search name, email or login" class="grow" />
+    <input type="search" name="q" value={query.q ?? ""} placeholder={filters.searchPlaceholder} class="grow" />
   </label>
-  <select name="role" class={selectClass} aria-label="Filter by role">
-    <option value="">All roles</option>
-    {roleEnum.options.map((r) => <option value={r} selected={query.role === r}>{r}</option>)}
+  <select name="role" class={selectClass} aria-label={filters.roleLabel}>
+    <option value="">{filters.allRoles}</option>
+    {roleEnum.options.map((r) => <option value={r} selected={query.role === r}>{roles[r]}</option>)}
   </select>
-  <select name="status" class={selectClass} aria-label="Filter by status">
-    <option value="">All statuses</option>
-    {statusEnum.options.map((s) => <option value={s} selected={query.status === s}>{s}</option>)}
+  <select name="status" class={selectClass} aria-label={filters.statusLabel}>
+    <option value="">{filters.allStatuses}</option>
+    {statusEnum.options.map((s) => <option value={s} selected={query.status === s}>{statuses[s]}</option>)}
   </select>
-  <button type="submit" class="btn btn-primary btn-sm">Apply</button>
-  {hasFilters && <a href={routes.private.users} class="btn btn-ghost btn-sm">Clear</a>}
+  <button type="submit" class="btn btn-primary btn-sm">{filters.apply}</button>
+  {hasFilters && <a href={routes.private.users} class="btn btn-ghost btn-sm">{filters.clear}</a>}
 </form>
