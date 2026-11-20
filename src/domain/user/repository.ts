@@ -5,6 +5,7 @@
  * It knows nothing about business rules, those live in the service.
  */
 
+import type { Locale } from "~/domain/shared/locale";
 import {
   type DailyCount,
   type ListUsersQuery,
@@ -29,19 +30,21 @@ type UserRow = {
   avatar: string;
   role: string;
   status: string;
+  locale: string | null;
   created_at: string;
   last_login_at: string;
 };
 
 export type UserRepository = {
-  /** Inserts the user, or refreshes profile and last login if it exists. Role and status only apply to inserts. */
+  /** Inserts the user, or refreshes profile and last login if it exists. Role, status and locale only apply to inserts. */
   upsertFromSignIn(
     identity: NewUser,
-    initial: { role: Role; status: Status },
+    initial: { role: Role; status: Status; locale?: Locale },
   ): Promise<User>;
   findById(id: string): Promise<User | null>;
   list(query: ListUsersQuery): Promise<{ users: User[]; total: number }>;
   update(id: string, patch: UpdateUserRequest): Promise<User | null>;
+  setLocale(id: string, locale: Locale): Promise<User | null>;
   /** Returns whether a user was deleted. */
   delete(id: string): Promise<boolean>;
   metrics(now?: Date): Promise<UserMetrics>;
@@ -57,6 +60,7 @@ const toUser = (row: UserRow): User =>
     avatar: row.avatar,
     role: row.role,
     status: row.status,
+    locale: row.locale,
     createdAt: row.created_at,
     lastLoginAt: row.last_login_at,
   });
@@ -72,8 +76,8 @@ export function createUserRepository(db: D1Database): UserRepository {
       const now = new Date().toISOString();
       const row = await db
         .prepare(
-          `INSERT INTO users (id, name, login, email, provider, avatar, role, status, created_at, last_login_at)
-           VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?9)
+          `INSERT INTO users (id, name, login, email, provider, avatar, role, status, locale, created_at, last_login_at)
+           VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?10)
            ON CONFLICT (provider, email) DO UPDATE SET
              name = excluded.name,
              login = excluded.login,
@@ -90,6 +94,7 @@ export function createUserRepository(db: D1Database): UserRepository {
           identity.avatar,
           initial.role,
           initial.status,
+          initial.locale ?? null,
           now,
         )
         .first<UserRow>();
@@ -149,6 +154,14 @@ export function createUserRepository(db: D1Database): UserRepository {
            WHERE id = ?1 RETURNING *`,
         )
         .bind(id, patch.role ?? null, patch.status ?? null)
+        .first<UserRow>();
+      return row ? toUser(row) : null;
+    },
+
+    async setLocale(id, locale) {
+      const row = await db
+        .prepare("UPDATE users SET locale = ?2 WHERE id = ?1 RETURNING *")
+        .bind(id, locale)
         .first<UserRow>();
       return row ? toUser(row) : null;
     },

@@ -16,6 +16,7 @@ const user: User = {
   ...identity("test@example.com"),
   role: "user",
   status: "active",
+  locale: null,
   createdAt: "2026-01-01T00:00:00.000Z",
   lastLoginAt: "2026-01-01T00:00:00.000Z",
 };
@@ -25,6 +26,7 @@ const stubRepo = (overrides: Partial<UserRepository> = {}): UserRepository => ({
   findById: vi.fn(async () => user),
   list: vi.fn(async () => ({ users: [user], total: 1 })),
   update: vi.fn(async () => user),
+  setLocale: vi.fn(async () => user),
   delete: vi.fn(async () => true),
   metrics: vi.fn(),
   ...overrides,

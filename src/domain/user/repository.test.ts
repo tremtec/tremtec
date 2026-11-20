@@ -14,10 +14,12 @@ const identity = (name: string, email: string): NewUser => ({
 const PENDING = { role: "user", status: "pending" } as const;
 const ADMIN = { role: "admin", status: "active" } as const;
 
+let db: D1Database;
 let repo: UserRepository;
 
 beforeEach(() => {
-  repo = createUserRepository(createTestDb());
+  db = createTestDb();
+  repo = createUserRepository(db);
 });
 
 describe("upsertFromSignIn", () => {
@@ -53,6 +55,64 @@ describe("upsertFromSignIn", () => {
       role: "user",
       status: "active",
     });
+  });
+});
+
+describe("locale", () => {
+  it("stores the initial locale on insert and keeps it on later sign ins", async () => {
+    const first = await repo.upsertFromSignIn(
+      identity("Bob", "bob@example.com"),
+      { ...PENDING, locale: "pt-br" },
+    );
+    const again = await repo.upsertFromSignIn(
+      identity("Bob", "bob@example.com"),
+      { ...PENDING, locale: "en" },
+    );
+
+    expect(first.locale).toBe("pt-br");
+    expect(again.locale).toBe("pt-br");
+  });
+
+  it("is null when no initial locale is given", async () => {
+    const bob = await repo.upsertFromSignIn(
+      identity("Bob", "bob@example.com"),
+      PENDING,
+    );
+
+    expect(bob.locale).toBeNull();
+  });
+
+  it("setLocale updates the locale and returns null for unknown ids", async () => {
+    const bob = await repo.upsertFromSignIn(
+      identity("Bob", "bob@example.com"),
+      PENDING,
+    );
+
+    expect(await repo.setLocale(bob.id, "pt-br")).toMatchObject({
+      id: bob.id,
+      locale: "pt-br",
+    });
+    expect((await repo.findById(bob.id))?.locale).toBe("pt-br");
+    expect(await repo.setLocale(crypto.randomUUID(), "en")).toBeNull();
+  });
+
+  it("reads a NULL or unknown stored locale as null", async () => {
+    const bob = await repo.upsertFromSignIn(
+      identity("Bob", "bob@example.com"),
+      { ...PENDING, locale: "pt-br" },
+    );
+
+    await db
+      .prepare("UPDATE users SET locale = NULL WHERE id = ?1")
+      .bind(bob.id)
+      .run();
+    expect((await repo.findById(bob.id))?.locale).toBeNull();
+
+    await db
+      .prepare("UPDATE users SET locale = 'fr' WHERE id = ?1")
+      .bind(bob.id)
+      .run();
+    expect((await repo.findById(bob.id))?.locale).toBeNull();
   });
 });
 

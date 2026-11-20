@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { localeEnum } from "~/domain/shared/locale";
 import { paginationSchema } from "~/domain/shared/pagination";
 import { providerEnum } from "~/domain/shared/provider";
 
@@ -17,6 +18,7 @@ export const userSchema = z.strictObject({
   avatar: z.url(),
   role: roleEnum,
   status: statusEnum,
+  locale: localeEnum.nullable().catch(null),
   createdAt: z.string(),
   lastLoginAt: z.string(),
 });
