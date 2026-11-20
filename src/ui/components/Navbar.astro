@@ -1,12 +1,29 @@
 ---
-import { routes } from "~/server/contants";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { defaultLang } from "~/i18n/ui";
+import { useTranslations } from "~/i18n/utils";
+import LanguageSwitcher from "~/ui/components/LanguageSwitcher.astro";
 import Logo from "~/ui/components/Logo.astro";
-import { landingContent } from "~/ui/contents/landing";
 
-const { navbar } = landingContent;
+interface Props {
+  path?: string;
+}
 
-const pathname = Astro.url.pathname;
-const isActive = (href: string) => pathname === href;
+const { path } = Astro.props;
+const t = useTranslations(Astro.currentLocale);
+const locale = Astro.currentLocale ?? defaultLang;
+
+const links = [
+  { label: t("nav.home"), href: getRelativeLocaleUrl(locale) },
+  { label: t("nav.services"), href: getRelativeLocaleUrl(locale, "services") },
+  { label: t("nav.products"), href: getRelativeLocaleUrl(locale, "products") },
+  { label: t("nav.blog"), href: getRelativeLocaleUrl(locale, "blog") },
+];
+
+const trim = (p: string) =>
+  p.length > 1 && p.endsWith("/") ? p.slice(0, -1) : p;
+const pathname = trim(Astro.originPathname);
+const isActive = (href: string) => pathname === trim(href);
 ---
 
 <div
@@ -16,16 +33,16 @@ const isActive = (href: string) => pathname === href;
     <div class="flex justify-between h-16 items-center w-full">
       <!-- Left: Logo -->
       <div class="flex-shrink-0 flex items-center gap-2">
-        <a href={routes.public.home} class="flex items-center gap-2">
+        <a href={getRelativeLocaleUrl(locale)} class="flex items-center gap-2">
           <Logo />
-          <span class="text-lg font-bold">{navbar.logo}</span>
+          <span class="text-lg font-bold">TremTec</span>
         </a>
       </div>
 
       <!-- Center: Navigation (Desktop) -->
       <div class="hidden md:flex items-center space-x-8">
         {
-          navbar.links.map((link) => (
+          links.map((link) => (
             <a
               href={link.href}
               class={`text-sm font-medium transition-colors ${isActive(link.href) ? "text-primary" : "text-base-content/80 hover:text-primary"}`}
@@ -38,21 +55,25 @@ const isActive = (href: string) => pathname === href;
 
       <!-- Right: CTA -->
       <div class="hidden md:flex items-center gap-4">
+        <LanguageSwitcher path={path} />
         <a
-          href={routes.public.login}
+          href={getRelativeLocaleUrl(locale, "login")}
           class="text-sm font-medium text-base-content/80 hover:text-primary transition-colors"
         >
-          {navbar.cta.login}
+          {t("nav.login")}
         </a>
-        <a href="/contact" class="btn btn-primary btn-sm font-medium px-6">
-          {navbar.cta.getStarted}
+        <a
+          href={getRelativeLocaleUrl(locale, "contact")}
+          class="btn btn-primary btn-sm font-medium px-6"
+        >
+          {t("nav.getStarted")}
         </a>
       </div>
 
       <!-- Mobile Menu Button -->
       <div class="flex items-center md:hidden gap-4">
         <label
-          aria-label="Open mobile menu"
+          aria-label={t("nav.openMenu")}
           for="mobile-drawer"
           class="btn btn-square btn-ghost"
         >

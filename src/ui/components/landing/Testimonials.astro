@@ -1,8 +1,31 @@
 ---
 import { Icon } from "astro-icon/components";
-import { landingContent } from "~/ui/contents/landing";
+import { useTranslations } from "~/i18n/utils";
 
-const { testimonials } = landingContent;
+const t = useTranslations(Astro.currentLocale);
+const items = [
+  {
+    company: "MeHabilite",
+    service: t("home.testimonials.mehabilite.service"),
+    outcome: t("home.testimonials.mehabilite.outcome"),
+    icon: "heroicons:rocket-launch",
+  },
+  {
+    company: "PodCodar",
+    service: t("home.testimonials.podcodar.service"),
+    outcome: t("home.testimonials.podcodar.outcome"),
+    icon: "heroicons:users",
+  },
+  {
+    company: "Devopness",
+    service: t("home.testimonials.devopness.service"),
+    outcomes: [
+      t("home.testimonials.devopness.outcome1"),
+      t("home.testimonials.devopness.outcome2"),
+    ],
+    icon: "heroicons:chart-bar-square",
+  },
+];
 ---
 
 <!-- Testimonials / Client Wins Section -->
@@ -12,16 +35,16 @@ const { testimonials } = landingContent;
       <h2
         class="text-3xl font-bold tracking-tight text-base-content sm:text-4xl"
       >
-        {testimonials.title}
+        {t("home.testimonials.title")}
       </h2>
       <p class="mt-6 text-lg leading-8 text-base-content/70">
-        {testimonials.description}
+        {t("home.testimonials.description")}
       </p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       {
-        testimonials.items.map((item) => (
+        items.map((item) => (
           <div class="card bg-base-200 border border-base-300 hover:border-primary/50 transition-colors">
             <div class="card-body">
               <div class="p-3 rounded-lg w-fit bg-primary/10 mb-4">

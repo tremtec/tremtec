@@ -1,8 +1,23 @@
 ---
 import { Icon } from "astro-icon/components";
-import { landingContent } from "~/ui/contents/landing";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { defaultLang } from "~/i18n/ui";
+import { useTranslations } from "~/i18n/utils";
 
-const { cta } = landingContent;
+const t = useTranslations(Astro.currentLocale);
+const locale = Astro.currentLocale ?? defaultLang;
+const features = [
+  {
+    title: t("home.cta.roles.title"),
+    description: t("home.cta.roles.description"),
+    icon: "heroicons:users",
+  },
+  {
+    title: t("home.cta.ownership.title"),
+    description: t("home.cta.ownership.description"),
+    icon: "heroicons:shield-check",
+  },
+];
 ---
 
 <!-- CTA Section -->
@@ -18,20 +33,23 @@ const { cta } = landingContent;
         <h2
           class="text-3xl font-bold tracking-tight text-base-content sm:text-4xl"
         >
-          {cta.title}
+          {t("home.cta.title")}
         </h2>
         <p class="mt-4 text-lg leading-8 text-base-content/70">
-          {cta.description}
+          {t("home.cta.description")}
         </p>
         <div class="mt-6 flex max-w-full gap-x-4">
-          <a href="/contact" class="btn btn-primary btn-lg w-full sm:w-auto">
-            {cta.button}
+          <a
+            href={getRelativeLocaleUrl(locale, "contact")}
+            class="btn btn-primary btn-lg w-full sm:w-auto"
+          >
+            {t("home.cta.button")}
           </a>
         </div>
       </div>
       <dl class="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 md:pt-2">
         {
-          cta.features.map((feature) => (
+          features.map((feature) => (
             <div class="flex flex-col items-start">
               <div class="rounded-md bg-base-100/5 p-2 ring-1 ring-base-content/10">
                 <Icon name={feature.icon} class="h-6 w-6 text-base-content" />

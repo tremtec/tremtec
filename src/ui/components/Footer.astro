@@ -1,9 +1,59 @@
 ---
 import { Icon } from "astro-icon/components";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { defaultLang } from "~/i18n/ui";
+import { useTranslations } from "~/i18n/utils";
 import Logo from "~/ui/components/Logo.astro";
-import { landingContent } from "~/ui/contents/landing";
 
-const { footer } = landingContent;
+const t = useTranslations(Astro.currentLocale);
+const locale = Astro.currentLocale ?? defaultLang;
+const services = getRelativeLocaleUrl(locale, "services");
+
+const sections = [
+  {
+    title: t("footer.services.title"),
+    links: [
+      { label: t("footer.services.implementation"), href: services },
+      { label: t("footer.services.cto"), href: services },
+      { label: t("footer.services.mentoring"), href: services },
+    ],
+  },
+  {
+    title: t("footer.company.title"),
+    links: [
+      { label: t("footer.company.about"), href: "#about" },
+      { label: t("footer.company.methodology"), href: "#methodology" },
+      {
+        label: t("footer.company.blog"),
+        href: getRelativeLocaleUrl(locale, "blog"),
+      },
+      {
+        label: t("footer.company.contact"),
+        href: getRelativeLocaleUrl(locale, "contact"),
+      },
+    ],
+  },
+  {
+    title: t("footer.connect.title"),
+    socials: [
+      {
+        label: "GitHub",
+        icon: "mdi:github",
+        href: "https://github.com/tremtec",
+      },
+      {
+        label: "LinkedIn",
+        icon: "mdi:linkedin",
+        href: "https://www.linkedin.com/company/tremtec/",
+      },
+    ],
+  },
+];
+
+const legal = [
+  { label: t("footer.privacy"), href: "#" },
+  { label: t("footer.terms"), href: "#" },
+];
 const currentYear = new Date().getFullYear();
 ---
 
@@ -11,17 +61,17 @@ const currentYear = new Date().getFullYear();
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
       <div class="col-span-2 md:col-span-1">
-        <a href="/" class="flex items-center gap-2">
+        <a href={getRelativeLocaleUrl(locale)} class="flex items-center gap-2">
           <Logo />
           <span class="text-lg font-bold">TremTec</span>
         </a>
         <p class="mt-4 text-sm text-base-content/60">
-          {footer.description}
+          {t("footer.description")}
         </p>
       </div>
 
       {
-        footer.sections.map((section) => (
+        sections.map((section) => (
           <div>
             <h3 class="text-sm font-semibold text-base-content tracking-wider uppercase mb-4">
               {section.title}
@@ -62,11 +112,11 @@ const currentYear = new Date().getFullYear();
       class="border-t border-base-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4"
     >
       <p class="text-sm text-base-content/40">
-        &copy; {currentYear} TremTec. {footer.rights}
+        &copy; {currentYear} TremTec. {t("footer.rights")}
       </p>
       <div class="flex space-x-6">
         {
-          footer.legal.map((link) => (
+          legal.map((link) => (
             <a
               href={link.href}
               class="text-sm text-base-content/40 hover:text-base-content"

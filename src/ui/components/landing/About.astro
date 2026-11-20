@@ -1,7 +1,11 @@
 ---
-import { landingContent } from "~/ui/contents/landing";
+import { useTranslations } from "~/i18n/utils";
 
-const { about } = landingContent;
+const t = useTranslations(Astro.currentLocale);
+const paragraphs = [
+  t("home.about.mission.paragraph1"),
+  t("home.about.mission.paragraph2"),
+];
 ---
 
 <!-- About Section -->
@@ -11,21 +15,21 @@ const { about } = landingContent;
       <h2
         class="text-3xl font-bold tracking-tight text-base-content sm:text-4xl"
       >
-        {about.title}
+        {t("home.about.title")}
       </h2>
 
       <p class="mt-6 text-lg leading-8 text-base-content/70">
-        {about.description}
+        {t("home.about.description")}
       </p>
     </div>
 
     <div class="card bg-base-200 border border-base-300">
       <div class="card-body max-w-4xl mx-auto">
         <h3 class="card-title text-2xl mb-6 text-primary">
-          {about.mission.title}
+          {t("home.about.mission.title")}
         </h3>
         {
-          about.mission.paragraphs.map((p) => (
+          paragraphs.map((p) => (
             <p class="text-lg leading-relaxed text-base-content/80 mb-4">
               {p}
             </p>

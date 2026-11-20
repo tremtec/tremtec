@@ -1,7 +1,7 @@
 ---
-import { landingContent } from "~/ui/contents/landing";
+import { useTranslations } from "~/i18n/utils";
 
-const { navbar } = landingContent;
+const t = useTranslations(Astro.currentLocale);
 
 export interface Props {
   size?: number;
@@ -12,5 +12,5 @@ const { size = 48 } = Astro.props;
   src="/images/logo.svg"
   width={size}
   height={size}
-  alt={`${navbar.logo} Logo`}
+  alt={t("logo.alt")}
 />
