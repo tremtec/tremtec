@@ -1,3 +1,5 @@
+import { LOCALE_INFO, type Locale } from "~/domain/shared/locale";
+
 const UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
   ["year", 365 * 24 * 60 * 60 * 1000],
   ["month", 30 * 24 * 60 * 60 * 1000],
@@ -27,4 +29,25 @@ export function initials(name: string): string {
       .map((part) => part[0]?.toUpperCase())
       .join("") || "?"
   );
+}
+
+const LONG_DATE: Intl.DateTimeFormatOptions = {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+};
+
+/**
+ * Formats a date for a locale, as a long date unless `options` say otherwise.
+ * Uses UTC so a date-only value keeps its calendar day on any server.
+ */
+export function formatDate(
+  value: Date | string | number,
+  locale: Locale,
+  options: Intl.DateTimeFormatOptions = LONG_DATE,
+): string {
+  return new Intl.DateTimeFormat(LOCALE_INFO[locale].tag, {
+    timeZone: "UTC",
+    ...options,
+  }).format(new Date(value));
 }

@@ -1,6 +1,7 @@
 import { defineCollection } from "astro/content/config";
 import { file, glob } from "astro/loaders";
 import { z } from "astro/zod";
+import { LOCALES } from "./domain/shared/locale";
 
 const blogSchema = z.object({
   title: z.string().min(3),
@@ -16,10 +17,23 @@ const blog = defineCollection({
   schema: blogSchema,
 });
 
+/** Stable ids: the label comes from the `products` dictionary, the icon from the page. */
+export const PRODUCT_CATEGORIES = [
+  "ai-agents",
+  "security-compliance",
+  "devops",
+  "observability",
+  "system-automation",
+] as const;
+export type ProductCategory = (typeof PRODUCT_CATEGORIES)[number];
+
 const productSchema = z.object({
   name: z.string().min(3),
-  description: z.string().min(3),
+  // Keyed by every locale, so a missing translation fails the build.
+  description: z.record(z.enum(LOCALES), z.string().min(3)),
   techStack: z.array(z.string()).min(1),
+  category: z.enum(PRODUCT_CATEGORIES),
+  github: z.url(),
 });
 
 const products = defineCollection({

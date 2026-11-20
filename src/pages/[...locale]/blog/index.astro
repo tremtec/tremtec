@@ -1,26 +1,23 @@
 ---
+import { LOCALE_INFO } from "~/domain/shared/locale";
+import { postsForLocale } from "~/lib/blog";
+import { formatDate } from "~/lib/format";
+import { localeStaticPaths, localizePath } from "~/lib/i18n";
 import Layout from "~/ui/components/layouts/Layout.astro";
+import { blogContent } from "~/ui/contents/blog";
 import { getCollection } from "astro:content";
 
-const posts = (await getCollection("blog")).sort((a, b) => {
-  const dateA = a.data.date?.getTime() ?? 0;
-  const dateB = b.data.date?.getTime() ?? 0;
-  return dateB - dateA;
-});
+export const getStaticPaths = localeStaticPaths;
 
-const formatDate = (date?: Date) => {
-  if (!date) return "";
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-};
+const locale = Astro.locals.locale;
+const { metadata, hero, latest, readArticle, moreArticles, cta } =
+  blogContent[locale];
 
+const posts = postsForLocale(await getCollection("blog"), locale);
 const [featured, ...rest] = posts;
 ---
 
-<Layout title="Blog - TremTec" description="Insights on engineering excellence, AI-driven development, and scaling high-performance teams.">
+<Layout title={metadata.title} description={metadata.description}>
   <!-- Hero -->
   <section class="relative overflow-hidden bg-base-100 pt-16 pb-20">
     <div class="absolute inset-0 opacity-5">
@@ -31,29 +28,34 @@ const [featured, ...rest] = posts;
     <div class="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
       <div class="max-w-2xl mx-auto text-center mb-16">
         <p class="text-base font-semibold leading-7 text-primary mb-3">
-          Our Blog
+          {hero.eyebrow}
         </p>
         <h1 class="text-5xl font-extrabold tracking-tight text-base-content sm:text-6xl mb-6">
-          Ideas & Insights
+          {hero.title}
         </h1>
         <p class="text-xl leading-8 text-base-content/70">
-          Engineering excellence, AI-driven development, and lessons from
-          scaling high-performance teams.
+          {hero.subtitle}
         </p>
       </div>
 
       <!-- Featured Post -->
       {featured && (
         <a
-          href={`/blog/${featured.id}`}
+          href={featured.href}
+          hreflang={featured.fallback ? LOCALE_INFO[featured.locale].tag : undefined}
           class="group block relative overflow-hidden rounded-3xl bg-base-200 border border-base-300 hover:border-primary/40 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5"
         >
           <div class="p-8 sm:p-12 md:p-16">
             <div class="flex flex-wrap items-center gap-3 mb-6">
               <span class="badge badge-primary badge-sm font-semibold px-3 py-2.5">
-                Latest
+                {latest}
               </span>
-              {featured.data.tags?.map((tag) => (
+              {featured.fallback && (
+                <span class="badge badge-outline badge-sm px-3 py-2.5" lang={LOCALE_INFO[featured.locale].tag}>
+                  {LOCALE_INFO[featured.locale].label}
+                </span>
+              )}
+              {featured.entry.data.tags?.map((tag) => (
                 <span class="badge badge-ghost badge-sm px-3 py-2.5">
                   {tag}
                 </span>
@@ -61,31 +63,31 @@ const [featured, ...rest] = posts;
             </div>
 
             <h2 class="text-3xl sm:text-4xl font-bold text-base-content mb-4 group-hover:text-primary transition-colors duration-300">
-              {featured.data.title}
+              {featured.entry.data.title}
             </h2>
 
-            {featured.data.description && (
+            {featured.entry.data.description && (
               <p class="text-lg text-base-content/60 max-w-2xl mb-8 leading-relaxed">
-                {featured.data.description}
+                {featured.entry.data.description}
               </p>
             )}
 
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-4">
-                {featured.data.author && (
+                {featured.entry.data.author && (
                   <span class="text-sm text-base-content/50">
-                    {featured.data.author}
+                    {featured.entry.data.author}
                   </span>
                 )}
-                {featured.data.date && (
+                {featured.entry.data.date && (
                   <span class="text-sm text-base-content/40">
-                    {formatDate(featured.data.date)}
+                    {formatDate(featured.entry.data.date, locale)}
                   </span>
                 )}
               </div>
 
               <span class="inline-flex items-center gap-2 text-primary font-semibold group-hover:gap-3 transition-all duration-300">
-                Read article
+                {readArticle}
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
                 </svg>
@@ -102,18 +104,24 @@ const [featured, ...rest] = posts;
     <section class="bg-base-200 py-20">
       <div class="mx-auto max-w-7xl px-6 lg:px-8">
         <h2 class="text-2xl font-bold text-base-content mb-12">
-          More Articles
+          {moreArticles}
         </h2>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {rest.map((post) => (
             <a
-              href={`/blog/${post.id}`}
+              href={post.href}
+              hreflang={post.fallback ? LOCALE_INFO[post.locale].tag : undefined}
               class="group flex flex-col overflow-hidden rounded-2xl bg-base-100 border border-base-300 hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
             >
               <div class="flex-1 p-8">
                 <div class="flex flex-wrap gap-2 mb-4">
-                  {post.data.tags?.map((tag) => (
+                  {post.fallback && (
+                    <span class="badge badge-outline badge-sm" lang={LOCALE_INFO[post.locale].tag}>
+                      {LOCALE_INFO[post.locale].label}
+                    </span>
+                  )}
+                  {post.entry.data.tags?.map((tag) => (
                     <span class="text-xs font-medium text-primary/80 bg-primary/10 rounded-full px-3 py-1">
                       {tag}
                     </span>
@@ -121,26 +129,26 @@ const [featured, ...rest] = posts;
                 </div>
 
                 <h3 class="text-xl font-bold text-base-content mb-3 group-hover:text-primary transition-colors duration-300 line-clamp-2">
-                  {post.data.title}
+                  {post.entry.data.title}
                 </h3>
 
-                {post.data.description && (
+                {post.entry.data.description && (
                   <p class="text-base-content/60 text-sm leading-relaxed line-clamp-3">
-                    {post.data.description}
+                    {post.entry.data.description}
                   </p>
                 )}
               </div>
 
               <div class="px-8 pb-8 pt-0 flex items-center justify-between border-t border-base-200 mt-auto">
                 <div class="flex items-center gap-3 pt-5">
-                  {post.data.author && (
+                  {post.entry.data.author && (
                     <span class="text-xs text-base-content/50">
-                      {post.data.author}
+                      {post.entry.data.author}
                     </span>
                   )}
-                  {post.data.date && (
+                  {post.entry.data.date && (
                     <span class="text-xs text-base-content/40">
-                      {formatDate(post.data.date)}
+                      {formatDate(post.entry.data.date, locale)}
                     </span>
                   )}
                 </div>
@@ -162,13 +170,13 @@ const [featured, ...rest] = posts;
   <section class="bg-base-100 py-20">
     <div class="mx-auto max-w-3xl px-6 lg:px-8 text-center">
       <h2 class="text-3xl font-bold text-base-content mb-4">
-        Want to work with us?
+        {cta.title}
       </h2>
       <p class="text-lg text-base-content/60 mb-8">
-        We help high-growth companies build trustworthy software faster.
+        {cta.subtitle}
       </p>
-      <a href="/contact" class="btn btn-primary btn-lg px-8">
-        Get Started
+      <a href={localizePath(locale, "/contact")} class="btn btn-primary btn-lg px-8">
+        {cta.button}
       </a>
     </div>
   </section>

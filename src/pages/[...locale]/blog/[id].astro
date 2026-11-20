@@ -2,45 +2,55 @@
 import "~/ui/styles/prism.css";
 
 import type { InferGetStaticPropsType } from "astro";
+import { DEFAULT_LOCALE } from "~/domain/shared/locale";
+import { postAlternates, postsForLocale, splitPostId } from "~/lib/blog";
+import { formatDate } from "~/lib/format";
+import { localizePath } from "~/lib/i18n";
 import Layout from "~/ui/components/layouts/Layout.astro";
+import { blogContent } from "~/ui/contents/blog";
 import { getCollection, render } from "astro:content";
 
+/** Post pages exist only where the post is really translated. */
 export const getStaticPaths = async () => {
   const posts = await getCollection("blog");
-  return posts.map((post) => ({
-    params: { id: post.id },
-    props: { post },
-  }));
+  return posts.flatMap((post) => {
+    const { locale, slug } = splitPostId(post.id);
+    if (!locale) return [];
+    return [
+      {
+        params: {
+          locale: locale === DEFAULT_LOCALE ? undefined : locale,
+          id: slug,
+        },
+        props: { post },
+      },
+    ];
+  });
 };
 
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 
+const locale = Astro.locals.locale;
+const { metadata, backToBlog, previous, next, cta } = blogContent[locale];
+
 const { post } = Astro.props as Props;
 const { Content } = await render(post);
 
-const formatDate = (date?: Date) => {
-  if (!date) return "";
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-};
+const allPosts = await getCollection("blog");
+const alternates = postAlternates(allPosts, Astro.params.id as string);
 
-const allPosts = (await getCollection("blog")).sort((a, b) => {
-  const dateA = a.data.date?.getTime() ?? 0;
-  const dateB = b.data.date?.getTime() ?? 0;
-  return dateB - dateA;
-});
-const currentIndex = allPosts.findIndex((p) => p.id === post.id);
-const nextPost = allPosts[currentIndex + 1];
-const prevPost = allPosts[currentIndex - 1];
+// Previous and next stay within this locale's own posts.
+const ownPosts = postsForLocale(allPosts, locale).filter((p) => !p.fallback);
+const currentIndex = ownPosts.findIndex((p) => p.entry.id === post.id);
+const nextPost = ownPosts[currentIndex + 1];
+const prevPost = ownPosts[currentIndex - 1];
 
 const image = new URL("/images/blog-og.webp", import.meta.url).href;
 ---
 
 <Layout
-  title={`${post.data.title} - TremTec`}
+  title={metadata.postTitle(post.data.title)}
+  alternates={alternates}
   description={post.data.description}
   type="article"
   image={image}
@@ -57,13 +67,13 @@ const image = new URL("/images/blog-og.webp", import.meta.url).href;
     <div class="relative z-10 mx-auto max-w-4xl px-6 lg:px-8">
       <!-- Back Link -->
       <a
-        href="/blog"
+        href={localizePath(locale, "/blog")}
         class="group inline-flex items-center gap-2 text-sm font-medium text-base-content/50 hover:text-primary transition-colors duration-300 mb-10"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd" />
         </svg>
-        Back to Blog
+        {backToBlog}
       </a>
 
       <!-- Tags -->
@@ -104,7 +114,7 @@ const image = new URL("/images/blog-og.webp", import.meta.url).href;
               </p>
               {post.data.date && (
                 <p class="text-xs text-base-content/40">
-                  {formatDate(post.data.date)}
+                  {formatDate(post.data.date, locale)}
                 </p>
               )}
             </div>
@@ -163,14 +173,14 @@ const image = new URL("/images/blog-og.webp", import.meta.url).href;
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {prevPost ? (
             <a
-              href={`/blog/${prevPost.id}`}
+              href={prevPost.href}
               class="group flex flex-col p-6 rounded-2xl bg-base-100 border border-base-300 hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
             >
               <span class="text-xs font-medium text-base-content/40 uppercase tracking-wider mb-3">
-                ← Previous
+                {previous}
               </span>
               <span class="text-base font-bold text-base-content group-hover:text-primary transition-colors duration-300 line-clamp-2">
-                {prevPost.data.title}
+                {prevPost.entry.data.title}
               </span>
             </a>
           ) : (
@@ -179,14 +189,14 @@ const image = new URL("/images/blog-og.webp", import.meta.url).href;
 
           {nextPost && (
             <a
-              href={`/blog/${nextPost.id}`}
+              href={nextPost.href}
               class="group flex flex-col p-6 rounded-2xl bg-base-100 border border-base-300 hover:border-primary/30 transition-all duration-300 hover:shadow-lg text-right"
             >
               <span class="text-xs font-medium text-base-content/40 uppercase tracking-wider mb-3">
-                Next →
+                {next}
               </span>
               <span class="text-base font-bold text-base-content group-hover:text-primary transition-colors duration-300 line-clamp-2">
-                {nextPost.data.title}
+                {nextPost.entry.data.title}
               </span>
             </a>
           )}
@@ -199,13 +209,13 @@ const image = new URL("/images/blog-og.webp", import.meta.url).href;
   <section class="bg-base-100 py-20 border-t border-base-200">
     <div class="mx-auto max-w-4xl px-6 lg:px-8 text-center">
       <h2 class="text-3xl font-bold text-base-content mb-4">
-        Want to work with us?
+        {cta.title}
       </h2>
       <p class="text-lg text-base-content/60 mb-8">
-        We help high-growth companies build trustworthy software faster.
+        {cta.subtitle}
       </p>
-      <a href="/contact" class="btn btn-primary btn-lg px-8">
-        Get Started
+      <a href={localizePath(locale, "/contact")} class="btn btn-primary btn-lg px-8">
+        {cta.button}
       </a>
     </div>
   </section>
