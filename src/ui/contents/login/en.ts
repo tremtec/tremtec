@@ -1,6 +1,8 @@
-export const loginContent = {
+export const en = {
   title: "Sign In - TremTec",
   welcome: "Welcome back, Innovator.",
+  github: "Sign in with GitHub",
+  google: "Sign in with Google",
   divider: "Or continue with email",
   email_login: {
     placeholder: "Enter your email",
@@ -13,3 +15,5 @@ export const loginContent = {
     privacy: "Privacy Policy",
   },
 };
+
+export type LoginContent = typeof en;

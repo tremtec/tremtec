@@ -6,9 +6,23 @@ import icon from "astro-icon";
 import mermaid from "astro-mermaid";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  DEFAULT_LOCALE,
+  LOCALE_INFO,
+  LOCALES,
+} from "./src/domain/shared/locale";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const site = process.env.BASE_URL || "https://tremtec.com";
+
+// Pages served by the Worker are not in the sitemap on their own
+const customPages = LOCALES.flatMap((locale) =>
+  ["/", "/login"].map(
+    (page) =>
+      new URL(locale === DEFAULT_LOCALE ? page : `/${locale}${page}`, site)
+        .href,
+  ),
+);
 
 // https://astro.build/config
 export default defineConfig({
@@ -17,7 +31,25 @@ export default defineConfig({
     prerenderEnvironment: "node",
   }),
 
-  integrations: [sitemap(), icon(), mermaid()],
+  i18n: {
+    locales: [...LOCALES],
+    defaultLocale: DEFAULT_LOCALE,
+    routing: { prefixDefaultLocale: false },
+  },
+
+  integrations: [
+    sitemap({
+      i18n: {
+        defaultLocale: DEFAULT_LOCALE,
+        locales: Object.fromEntries(
+          LOCALES.map((locale) => [locale, LOCALE_INFO[locale].tag]),
+        ),
+      },
+      customPages,
+    }),
+    icon(),
+    mermaid(),
+  ],
 
   fonts: [
     {

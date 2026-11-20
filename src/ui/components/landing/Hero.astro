@@ -1,7 +1,8 @@
 ---
+import { localizePath } from "~/lib/i18n";
 import { landingContent } from "~/ui/contents/landing";
 
-const { hero } = landingContent;
+const { hero } = landingContent[Astro.locals.locale];
 ---
 
 <!-- Hero Section -->
@@ -48,7 +49,7 @@ const { hero } = landingContent;
           class="mt-10 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 sm:gap-x-6"
         >
           <a
-            href="/contact"
+            href={localizePath(Astro.locals.locale, "/contact")}
             class="btn btn-primary btn-lg w-full sm:w-auto px-8"
           >
             {hero.cta.demo}

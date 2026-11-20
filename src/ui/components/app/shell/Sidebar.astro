@@ -24,7 +24,7 @@ const workspace = [...nav.workspace, ...(isAdmin ? nav.admin : [])];
     class="flex h-16 items-center gap-3 border-b border-base-content/10 px-6 transition-opacity hover:opacity-80"
   >
     <Logo size={32} />
-    <span class="text-lg font-bold tracking-tight">{landingContent.navbar.logo}</span>
+    <span class="text-lg font-bold tracking-tight">{landingContent[Astro.locals.locale].navbar.logo}</span>
   </a>
 
   <nav class="flex flex-1 flex-col gap-8 overflow-y-auto px-4 py-6">

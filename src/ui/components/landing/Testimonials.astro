@@ -2,7 +2,7 @@
 import { Icon } from "astro-icon/components";
 import { landingContent } from "~/ui/contents/landing";
 
-const { testimonials } = landingContent;
+const { testimonials } = landingContent[Astro.locals.locale];
 ---
 
 <!-- Testimonials / Client Wins Section -->

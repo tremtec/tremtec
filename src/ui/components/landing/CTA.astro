@@ -1,8 +1,9 @@
 ---
 import { Icon } from "astro-icon/components";
+import { localizePath } from "~/lib/i18n";
 import { landingContent } from "~/ui/contents/landing";
 
-const { cta } = landingContent;
+const { cta } = landingContent[Astro.locals.locale];
 ---
 
 <!-- CTA Section -->
@@ -24,7 +25,7 @@ const { cta } = landingContent;
           {cta.description}
         </p>
         <div class="mt-6 flex max-w-full gap-x-4">
-          <a href="/contact" class="btn btn-primary btn-lg w-full sm:w-auto">
+          <a href={localizePath(Astro.locals.locale, "/contact")} class="btn btn-primary btn-lg w-full sm:w-auto">
             {cta.button}
           </a>
         </div>

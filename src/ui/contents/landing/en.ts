@@ -1,9 +1,17 @@
-export const landingContent = {
+export const en = {
   metadata: {
     title: "TremTec - Build Trustworthy Software Faster",
+    description:
+      "Flexible engineering teams that scale with your project. Build trustworthy software faster with AI-driven development and expert teams.",
+    defaultDescription: "TremTec Software Solutions",
+    rssTitle: "TremTec Blog RSS Feed",
   },
   navbar: {
     logo: "TremTec",
+    logoAlt: "TremTec Logo",
+    openMenu: "Open mobile menu",
+    closeMenu: "Close mobile menu",
+    languageLabel: "Language",
     links: [
       { label: "Home", href: "/" },
       { label: "Services", href: "/services" },
@@ -204,3 +212,5 @@ end`,
     ],
   },
 };
+
+export type LandingContent = typeof en;

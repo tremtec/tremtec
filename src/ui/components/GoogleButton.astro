@@ -1,9 +1,9 @@
 ---
 interface Props {
-  text?: string;
+  text: string;
 }
 
-const { text = "Sign in with Google" } = Astro.props;
+const { text } = Astro.props;
 ---
 <a href="/api/auth/google" class="btn btn-outline btn-lg w-full gap-2 hover:bg-red-100 dark:hover:bg-red-500">
   <svg class="w-5 h-5" viewBox="0 0 24 24">

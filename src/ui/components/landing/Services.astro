@@ -2,7 +2,7 @@
 import { Icon } from "astro-icon/components";
 import { landingContent } from "~/ui/contents/landing";
 
-const { services } = landingContent;
+const { services } = landingContent[Astro.locals.locale];
 ---
 
 <!-- Bento Grid Services -->

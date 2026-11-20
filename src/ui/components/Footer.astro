@@ -1,9 +1,11 @@
 ---
 import { Icon } from "astro-icon/components";
+import { localizePath } from "~/lib/i18n";
 import Logo from "~/ui/components/Logo.astro";
 import { landingContent } from "~/ui/contents/landing";
 
-const { footer } = landingContent;
+const locale = Astro.locals.locale;
+const { footer, navbar } = landingContent[locale];
 const currentYear = new Date().getFullYear();
 ---
 
@@ -11,9 +13,9 @@ const currentYear = new Date().getFullYear();
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
       <div class="col-span-2 md:col-span-1">
-        <a href="/" class="flex items-center gap-2">
+        <a href={localizePath(locale, "/")} class="flex items-center gap-2">
           <Logo />
-          <span class="text-lg font-bold">TremTec</span>
+          <span class="text-lg font-bold">{navbar.logo}</span>
         </a>
         <p class="mt-4 text-sm text-base-content/60">
           {footer.description}
@@ -31,7 +33,7 @@ const currentYear = new Date().getFullYear();
                 {section.links.map((link) => (
                   <li>
                     <a
-                      href={link.href}
+                      href={localizePath(locale, link.href)}
                       class="text-sm text-base-content/60 hover:text-primary transition-colors"
                     >
                       {link.label}
@@ -68,7 +70,7 @@ const currentYear = new Date().getFullYear();
         {
           footer.legal.map((link) => (
             <a
-              href={link.href}
+              href={localizePath(locale, link.href)}
               class="text-sm text-base-content/40 hover:text-base-content"
             >
               {link.label}

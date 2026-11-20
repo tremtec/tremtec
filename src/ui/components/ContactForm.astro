@@ -41,6 +41,8 @@ const { fields, submit } = Astro.props;
   <!-- Form-level response area -->
   <div id="form-response"></div>
 
+  <input type="hidden" name="locale" value={Astro.locals.locale} />
+
   <FormField
     name="name"
     label={fields.name.label}

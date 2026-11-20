@@ -1,14 +1,23 @@
 ---
 import "~/ui/styles/global.css";
 
+import {
+  DEFAULT_LOCALE,
+  LOCALE_INFO,
+  LOCALES,
+  type Locale,
+} from "~/domain/shared/locale";
+import { localizePath, splitLocale } from "~/lib/i18n";
 import { routes } from "~/server/contants";
 import Footer from "~/ui/components/Footer.astro";
+import LocaleSwitcher from "~/ui/components/LocaleSwitcher.astro";
 import Logo from "~/ui/components/Logo.astro";
 import Navbar from "~/ui/components/Navbar.astro";
 import OpenGraph from "~/ui/components/OpenGraph.astro";
 import { landingContent } from "~/ui/contents/landing";
 
-const { navbar } = landingContent;
+const locale = Astro.locals.locale;
+const { metadata, navbar } = landingContent[locale];
 
 interface Props {
   title?: string;
@@ -20,15 +29,19 @@ interface Props {
   updatedTime?: string;
   section?: string;
   hideNavbar?: boolean;
+  /** Path of this page in each locale that has it. Defaults to every locale. */
+  alternates?: Partial<Record<Locale, string>>;
 }
 
 const pathname = Astro.url.pathname;
 const isActive = (href: string) =>
   href.startsWith("#") ? false : pathname.startsWith(href);
 
+const currentPath = splitLocale(pathname).path;
+
 const {
   title = "TremTec",
-  description = "TremTec Software Solutions",
+  description = metadata.defaultDescription,
   image = "/images/train-og.webp",
   type = "website",
   author,
@@ -36,18 +49,33 @@ const {
   updatedTime,
   section,
   hideNavbar = false,
+  alternates = Object.fromEntries(
+    LOCALES.map((l) => [l, localizePath(l, currentPath)]),
+  ),
 } = Astro.props;
+
+const alternateLinks = LOCALES.filter((l) => alternates[l]).map((l) => ({
+  hreflang: LOCALE_INFO[l].tag,
+  href: new URL(alternates[l] as string, Astro.url).href,
+}));
+const defaultAlternate = alternates[DEFAULT_LOCALE];
 ---
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang={LOCALE_INFO[locale].tag}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <link rel="alternate" type="application/rss+xml" title="TremTec Blog RSS Feed" href="/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title={metadata.rssTitle} href={localizePath(locale, "/rss.xml")} />
+    {alternateLinks.map(({ hreflang, href }) => (
+      <link rel="alternate" hreflang={hreflang} href={href} />
+    ))}
+    {defaultAlternate && (
+      <link rel="alternate" hreflang="x-default" href={new URL(defaultAlternate, Astro.url).href} />
+    )}
 
     <OpenGraph
       title={title}
@@ -74,7 +102,7 @@ const {
         {hideNavbar 
           ? <slot />
           : (
-            <Navbar />
+            <Navbar alternates={alternates} />
 
             <!-- Content -->
             <div class="w-full flex-1 py-4 mt-20">
@@ -86,12 +114,12 @@ const {
       </div>
 
       <div class="drawer-side z-50">
-        <label for="mobile-drawer" class="drawer-overlay"></label>
+        <label for="mobile-drawer" class="drawer-overlay" aria-label={navbar.closeMenu}></label>
 
         <ul class="menu p-4 w-80 min-h-full bg-base-200 gap-2 flex flex-col">
           <div class="spacer mt-4 mb-8">
             <a
-              href={routes.public.home}
+              href={localizePath(locale, routes.public.home)}
               class="flex dark:text-white items-center gap-2"
             >
               <Logo />
@@ -103,9 +131,8 @@ const {
             navbar.links.map((link) => (
               <li>
                 <a
-                  href={link.href}
+                  href={localizePath(locale, link.href)}
                   class={`text-lg font-medium ${isActive(link.href) ? "text-primary" : ""}`}
-                  onclick="document.getElementById('mobile-drawer').click()"
                 >
                   {link.label}
                 </a>
@@ -117,15 +144,15 @@ const {
 
           <li class="mt-4 py-4 gap-4 flex flex-col border-t border-base-300">
             <a
-              href={routes.public.login}
+              href={localizePath(locale, routes.public.login)}
               class="text-lg font-medium"
-              onclick="document.getElementById('mobile-drawer').click()"
             >
               {navbar.cta.login}
             </a>
-            <a href="/contact" class="btn btn-primary btn-sm font-medium px-6">
+            <a href={localizePath(locale, "/contact")} class="btn btn-primary btn-sm font-medium px-6">
               {navbar.cta.getStarted}
             </a>
+            <LocaleSwitcher alternates={alternates} />
           </li>
         </ul>
       </div>

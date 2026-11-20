@@ -1,7 +1,10 @@
 ---
+import { localeStaticPaths } from "~/lib/i18n";
 import ContactForm from "~/ui/components/ContactForm.astro";
 import Layout from "~/ui/components/layouts/Layout.astro";
 import { contactContent } from "~/ui/contents/contact";
+
+export const getStaticPaths = localeStaticPaths;
 
 const { metadata, hero, form, trustSignals } =
   contactContent[Astro.locals.locale];

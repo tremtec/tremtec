@@ -1,0 +1,41 @@
+---
+import { LOCALE_INFO, LOCALES, type Locale } from "~/domain/shared/locale";
+import { localeCookieString, localizePath } from "~/lib/i18n";
+import { landingContent } from "~/ui/contents/landing";
+
+interface Props {
+  /** Path of the current page in each locale that has one. */
+  alternates: Partial<Record<Locale, string>>;
+  class?: string;
+}
+
+const { alternates, class: className = "" } = Astro.props;
+const current = Astro.locals.locale;
+const { navbar } = landingContent[current];
+---
+
+<nav aria-label={navbar.languageLabel} class={`flex items-center gap-4 ${className}`}>
+  {
+    LOCALES.filter((locale) => locale !== current).map((locale) => (
+      <a
+        href={alternates[locale] ?? localizePath(locale, "/")}
+        hreflang={LOCALE_INFO[locale].tag}
+        lang={LOCALE_INFO[locale].tag}
+        data-locale-cookie={localeCookieString(locale)}
+        class="text-sm font-medium text-base-content/80 hover:text-primary transition-colors"
+      >
+        {LOCALE_INFO[locale].label}
+      </a>
+    ))
+  }
+</nav>
+
+<script>
+  // The cookie remembers the choice for the pages that are served as static files
+  document.addEventListener("click", (event) => {
+    const link = (event.target as Element).closest<HTMLElement>(
+      "[data-locale-cookie]",
+    );
+    if (link?.dataset.localeCookie) document.cookie = link.dataset.localeCookie;
+  });
+</script>

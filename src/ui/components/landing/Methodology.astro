@@ -2,7 +2,7 @@
 import { Icon } from "astro-icon/components";
 import { landingContent } from "~/ui/contents/landing";
 
-const { methodology } = landingContent;
+const { methodology } = landingContent[Astro.locals.locale];
 ---
 
 <!-- Methodology Section -->

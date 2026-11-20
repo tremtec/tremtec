@@ -1,0 +1,197 @@
+---
+import { localeStaticPaths, localizePath } from "~/lib/i18n";
+import Layout from "~/ui/components/layouts/Layout.astro";
+import { servicesContent } from "~/ui/contents/services";
+
+export const getStaticPaths = localeStaticPaths;
+
+const locale = Astro.locals.locale;
+const {
+  metadata,
+  hero,
+  investment,
+  popular,
+  teamLabel,
+  plans,
+  stats,
+  flexibility,
+  drivers,
+  cta,
+  faq,
+} = servicesContent[locale];
+const contactHref = localizePath(locale, "/contact");
+const flexColumns = [flexibility.composition, flexibility.engagement];
+---
+
+<Layout title={metadata.title}>
+  <!-- Hero -->
+  <section class="px-6 py-20 max-w-6xl mx-auto">
+    <div class="text-center mb-16">
+      <h1 class="text-5xl font-bold text-base-content mb-6">
+        {hero.title}
+      </h1>
+      <p class="text-xl text-base-content/70 max-w-3xl mx-auto">
+        {hero.subtitle}
+      </p>
+    </div>
+
+    <!-- Three Core Services -->
+    <div class="grid md:grid-cols-3 gap-8 mb-20">
+      {plans.map((plan) => (
+        <div
+          class={plan.popular
+            ? "bg-base-100 border-2 border-primary rounded-lg p-8 shadow-lg hover:shadow-xl transition relative"
+            : "bg-base-100 border border-base-300 rounded-lg p-8 hover:shadow-lg transition"}
+        >
+          {plan.popular && (
+            <div class="absolute -top-4 left-8 bg-primary text-base-100 px-3 py-1 rounded-full text-xs font-bold">
+              {popular}
+            </div>
+          )}
+
+          <div class="h-12 w-12 bg-primary/10 rounded-lg mb-4 flex items-center justify-center">
+            <span class="text-primary text-xl">{plan.icon}</span>
+          </div>
+          <h3 class="text-2xl font-bold text-base-content mb-3">{plan.title}</h3>
+          <p class="text-base-content/70 mb-6">
+            {plan.summary}
+          </p>
+
+          <div class={`${plan.popular ? "bg-primary/10" : "bg-base-200"} rounded p-4 mb-6`}>
+            <p class="text-sm text-base-content/60 uppercase tracking-wide font-semibold mb-2">{investment}</p>
+            <p class="text-3xl font-bold text-base-content">{plan.price}</p>
+            <p class="text-sm text-base-content/70 mt-1">{plan.duration}</p>
+          </div>
+
+          <div class="space-y-3 mb-6">
+            {plan.features.map((feature) => (
+              <p class="text-sm text-base-content/80">✓ {feature}</p>
+            ))}
+          </div>
+
+          <p class="text-xs text-base-content/60 mb-4">
+            <strong>{teamLabel}</strong> {plan.team}
+          </p>
+
+          <a href={contactHref} class="text-primary font-semibold hover:text-primary/80 transition">
+            {plan.cta}
+          </a>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Comparison Banner -->
+  <section class="bg-base-200 px-6 py-16 border-t border-base-300">
+    <div class="max-w-6xl mx-auto">
+      <h3 class="text-2xl font-bold text-base-content mb-8 text-center">
+        {stats.title}
+      </h3>
+      <div class="grid md:grid-cols-4 gap-6">
+        {stats.items.map((stat) => (
+          <div class="text-center">
+            <p class="text-3xl font-bold text-primary mb-2">{stat.value}</p>
+            <p class="text-sm text-base-content/70">{stat.label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Flexibility Section -->
+  <section class="bg-base-200 px-6 py-20">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="text-4xl font-bold mb-12 text-center text-base-content">
+        {flexibility.title}
+      </h2>
+
+      <div class="grid md:grid-cols-2 gap-12">
+        {flexColumns.map((column) => (
+          <div>
+            <h3 class="text-xl font-bold mb-4 text-base-content">{column.title}</h3>
+            <p class="text-base-content/70 mb-6">
+              {column.intro}
+            </p>
+            <ul class="space-y-3 text-base-content/80">
+              {column.items.map((item) => (
+                <li class="flex items-start">
+                  <span class="mr-3">→</span>
+                  <span><strong>{item.term}</strong> {item.text}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Drivers -->
+  <section class="px-6 py-20 max-w-6xl mx-auto">
+    <h2 class="text-4xl font-bold text-base-content mb-12 text-center">
+      {drivers.title}
+    </h2>
+
+    <div class="grid md:grid-cols-2 gap-12">
+      {drivers.items.map((driver) => (
+        <div class="bg-base-200 border border-base-300 rounded-lg p-8">
+          <h3 class="text-xl font-bold text-base-content mb-4">{driver.title}</h3>
+          <p class="text-base-content/70 mb-6">
+            {driver.question}
+          </p>
+          <ul class="space-y-2 text-base-content/70">
+            {driver.points.map((point) => (
+              <li>• {point}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="bg-base-200 px-6 py-20" id="contact">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-4xl font-bold mb-6 text-base-content">
+        {cta.title}
+      </h2>
+      <p class="text-lg text-base-content/70 mb-8 max-w-2xl mx-auto">
+        {cta.description}
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href={cta.bookCall.href} class="btn btn-primary font-bold">
+          {cta.bookCall.label}
+        </a>
+        <a href="#" class="btn btn-outline">
+          {cta.caseStudies}
+        </a>
+      </div>
+      <p class="text-sm text-base-content/60 mt-6">
+        {cta.emailPrefix} <strong>{cta.email}</strong> {cta.emailSuffix}
+      </p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="bg-base-200 px-6 py-20">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-4xl font-bold text-base-content mb-12 text-center">
+        {faq.title}
+      </h2>
+
+      <div class="space-y-6">
+        {faq.items.map((item) => (
+          <details class="bg-base-100 border border-base-300 rounded-lg p-6 cursor-pointer hover:shadow-md transition group">
+            <summary class="font-bold text-base-content flex items-center justify-between">
+              {item.question}
+              <span class="group-open:rotate-180 transition">→</span>
+            </summary>
+            <p class="text-base-content/70 mt-4">
+              {item.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>

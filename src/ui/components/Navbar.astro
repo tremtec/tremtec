@@ -1,12 +1,22 @@
 ---
+import type { Locale } from "~/domain/shared/locale";
+import { localizePath } from "~/lib/i18n";
 import { routes } from "~/server/contants";
+import LocaleSwitcher from "~/ui/components/LocaleSwitcher.astro";
 import Logo from "~/ui/components/Logo.astro";
 import { landingContent } from "~/ui/contents/landing";
 
-const { navbar } = landingContent;
+interface Props {
+  alternates: Partial<Record<Locale, string>>;
+}
 
-const pathname = Astro.url.pathname;
-const isActive = (href: string) => pathname === href;
+const { alternates } = Astro.props;
+const locale = Astro.locals.locale;
+const { navbar } = landingContent[locale];
+
+const trimSlash = (path: string) => path.replace(/\/$/, "");
+const pathname = trimSlash(Astro.url.pathname);
+const isActive = (href: string) => pathname === trimSlash(href);
 ---
 
 <div
@@ -16,7 +26,7 @@ const isActive = (href: string) => pathname === href;
     <div class="flex justify-between h-16 items-center w-full">
       <!-- Left: Logo -->
       <div class="flex-shrink-0 flex items-center gap-2">
-        <a href={routes.public.home} class="flex items-center gap-2">
+        <a href={localizePath(locale, routes.public.home)} class="flex items-center gap-2">
           <Logo />
           <span class="text-lg font-bold">{navbar.logo}</span>
         </a>
@@ -27,7 +37,7 @@ const isActive = (href: string) => pathname === href;
         {
           navbar.links.map((link) => (
             <a
-              href={link.href}
+              href={localizePath(locale, link.href)}
               class={`text-sm font-medium transition-colors ${isActive(link.href) ? "text-primary" : "text-base-content/80 hover:text-primary"}`}
             >
               {link.label}
@@ -38,13 +48,14 @@ const isActive = (href: string) => pathname === href;
 
       <!-- Right: CTA -->
       <div class="hidden md:flex items-center gap-4">
+        <LocaleSwitcher alternates={alternates} />
         <a
-          href={routes.public.login}
+          href={localizePath(locale, routes.public.login)}
           class="text-sm font-medium text-base-content/80 hover:text-primary transition-colors"
         >
           {navbar.cta.login}
         </a>
-        <a href="/contact" class="btn btn-primary btn-sm font-medium px-6">
+        <a href={localizePath(locale, "/contact")} class="btn btn-primary btn-sm font-medium px-6">
           {navbar.cta.getStarted}
         </a>
       </div>
@@ -52,7 +63,7 @@ const isActive = (href: string) => pathname === href;
       <!-- Mobile Menu Button -->
       <div class="flex items-center md:hidden gap-4">
         <label
-          aria-label="Open mobile menu"
+          aria-label={navbar.openMenu}
           for="mobile-drawer"
           class="btn btn-square btn-ghost"
         >

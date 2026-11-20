@@ -1,4 +1,7 @@
 ---
+import { LOCALE_INFO } from "~/domain/shared/locale";
+import { landingContent } from "~/ui/contents/landing";
+
 interface Props {
   title?: string;
   description?: string;
@@ -12,9 +15,11 @@ interface Props {
   section?: string;
 }
 
+const locale = Astro.locals.locale;
+
 const {
   title = "TremTec",
-  description = "TremTec Software Solutions",
+  description = landingContent[locale].metadata.defaultDescription,
   image = "/images/train-og.webp",
   type = "website",
   imageWidth = 1200,
@@ -50,7 +55,7 @@ const logo = new URL("/images/logo.svg", Astro.url.origin).href;
 <meta property="og:image:width" content={String(imageWidth)} />
 <meta property="og:image:height" content={String(imageHeight)} />
 <meta property="og:image:alt" content={description} />
-<meta property="og:locale" content="en_US" />
+<meta property="og:locale" content={LOCALE_INFO[locale].ogLocale} />
 <meta property="og:site_name" content={siteName} />
 
 {type === "article" && (

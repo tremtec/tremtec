@@ -1,18 +1,27 @@
 ---
+export const prerender = false;
+
+import { localizePath, splitLocale } from "~/lib/i18n";
 import Layout from "~/ui/components/layouts/Layout.astro";
+import { notFoundContent } from "~/ui/contents/not-found";
+
+// The error render may not pass through the middleware, so the path decides
+Astro.locals.locale = splitLocale(Astro.url.pathname).locale;
+const locale = Astro.locals.locale;
+const content = notFoundContent[locale];
 ---
 
-<Layout title="Page Not Found - TremTec">
+<Layout title={content.title} alternates={{}}>
   <div class="min-h-screen flex items-center justify-center p-4">
     <div class="text-center max-w-lg">
       <h1 class="text-6xl font-bold text-primary mb-4">404</h1>
-      <h2 class="text-2xl font-semibold mb-4">Page Not Found</h2>
+      <h2 class="text-2xl font-semibold mb-4">{content.heading}</h2>
       <p class="text-base-content/70 mb-8">
-        Oops! This page doesn't exist. Check the URL or go back home.
+        {content.description}
       </p>
       <div class="flex gap-4 justify-center">
-        <a href="/" class="btn btn-primary">Go Home</a>
-        <a href="/contact" class="btn btn-outline">Contact Us</a>
+        <a href={localizePath(locale, "/")} class="btn btn-primary">{content.home}</a>
+        <a href={localizePath(locale, "/contact")} class="btn btn-outline">{content.contact}</a>
       </div>
     </div>
   </div>
