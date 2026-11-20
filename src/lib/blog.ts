@@ -29,7 +29,7 @@ export const splitPostId = (id: string) => {
 };
 
 const hrefFor = (locale: Locale, slug: string) =>
-  localizePath(locale, `/blog/${slug}`);
+  localizePath(locale, `/blog/${slug}/`);
 
 const time = (entry: BlogEntry) => entry.data.date?.getTime() ?? 0;
 

@@ -21,7 +21,7 @@ describe("postsForLocale", () => {
     expect(post).toMatchObject({
       entry: entries[3],
       locale: "pt-br",
-      href: "/pt-br/blog/hello-world",
+      href: "/pt-br/blog/hello-world/",
       fallback: false,
     });
   });
@@ -33,7 +33,7 @@ describe("postsForLocale", () => {
     expect(post).toMatchObject({
       entry: entries[1],
       locale: "en",
-      href: "/blog/ai-driven-sdlc",
+      href: "/blog/ai-driven-sdlc/",
       fallback: true,
     });
   });
@@ -67,11 +67,11 @@ describe("postsForLocale", () => {
 describe("postAlternates", () => {
   it("lists only the existing translations", () => {
     expect(postAlternates(entries, "hello-world")).toEqual({
-      en: "/blog/hello-world",
-      "pt-br": "/pt-br/blog/hello-world",
+      en: "/blog/hello-world/",
+      "pt-br": "/pt-br/blog/hello-world/",
     });
     expect(postAlternates(entries, "ai-driven-sdlc")).toEqual({
-      en: "/blog/ai-driven-sdlc",
+      en: "/blog/ai-driven-sdlc/",
     });
   });
 });

@@ -62,12 +62,18 @@ const [featured, ...rest] = posts;
               ))}
             </div>
 
-            <h2 class="text-3xl sm:text-4xl font-bold text-base-content mb-4 group-hover:text-primary transition-colors duration-300">
+            <h2
+              lang={featured.fallback ? LOCALE_INFO[featured.locale].tag : undefined}
+              class="text-3xl sm:text-4xl font-bold text-base-content mb-4 group-hover:text-primary transition-colors duration-300"
+            >
               {featured.entry.data.title}
             </h2>
 
             {featured.entry.data.description && (
-              <p class="text-lg text-base-content/60 max-w-2xl mb-8 leading-relaxed">
+              <p
+                lang={featured.fallback ? LOCALE_INFO[featured.locale].tag : undefined}
+                class="text-lg text-base-content/60 max-w-2xl mb-8 leading-relaxed"
+              >
                 {featured.entry.data.description}
               </p>
             )}
@@ -115,9 +121,9 @@ const [featured, ...rest] = posts;
               class="group flex flex-col overflow-hidden rounded-2xl bg-base-100 border border-base-300 hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
             >
               <div class="flex-1 p-8">
-                <div class="flex flex-wrap gap-2 mb-4">
+                <div class="flex flex-wrap items-center gap-2 mb-4">
                   {post.fallback && (
-                    <span class="badge badge-outline badge-sm" lang={LOCALE_INFO[post.locale].tag}>
+                    <span class="rounded-full border border-base-content/20 px-3 py-1 text-xs font-medium text-base-content/70" lang={LOCALE_INFO[post.locale].tag}>
                       {LOCALE_INFO[post.locale].label}
                     </span>
                   )}
@@ -128,12 +134,18 @@ const [featured, ...rest] = posts;
                   ))}
                 </div>
 
-                <h3 class="text-xl font-bold text-base-content mb-3 group-hover:text-primary transition-colors duration-300 line-clamp-2">
+                <h3
+                  lang={post.fallback ? LOCALE_INFO[post.locale].tag : undefined}
+                  class="text-xl font-bold text-base-content mb-3 group-hover:text-primary transition-colors duration-300 line-clamp-2"
+                >
                   {post.entry.data.title}
                 </h3>
 
                 {post.entry.data.description && (
-                  <p class="text-base-content/60 text-sm leading-relaxed line-clamp-3">
+                  <p
+                    lang={post.fallback ? LOCALE_INFO[post.locale].tag : undefined}
+                    class="text-base-content/60 text-sm leading-relaxed line-clamp-3"
+                  >
                     {post.entry.data.description}
                   </p>
                 )}

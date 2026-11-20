@@ -21,7 +21,7 @@ export const GET: APIRoute = async (context) => {
       title: entry.data.title,
       pubDate: entry.data.date,
       description: entry.data.description,
-      link: `${href}/`,
+      link: href,
     })),
     customData: `<language>${LOCALE_INFO[locale].tag.toLowerCase()}</language>`,
   });

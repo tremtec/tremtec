@@ -7,9 +7,14 @@ interface Props {
   /** Path of the current page in each locale that has one. */
   alternates: Partial<Record<Locale, string>>;
   class?: string;
+  linkClass?: string;
 }
 
-const { alternates, class: className = "" } = Astro.props;
+const {
+  alternates,
+  class: className = "",
+  linkClass = "text-sm font-medium text-base-content/80 hover:text-primary transition-colors",
+} = Astro.props;
 const current = Astro.locals.locale;
 const { navbar } = landingContent[current];
 ---
@@ -22,7 +27,7 @@ const { navbar } = landingContent[current];
         hreflang={LOCALE_INFO[locale].tag}
         lang={LOCALE_INFO[locale].tag}
         data-locale-cookie={localeCookieString(locale)}
-        class="text-sm font-medium text-base-content/80 hover:text-primary transition-colors"
+        class={linkClass}
       >
         {LOCALE_INFO[locale].label}
       </a>

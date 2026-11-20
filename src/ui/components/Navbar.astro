@@ -38,7 +38,7 @@ const isActive = (href: string) => pathname === trimSlash(href);
           navbar.links.map((link) => (
             <a
               href={localizePath(locale, link.href)}
-              class={`text-sm font-medium transition-colors ${isActive(link.href) ? "text-primary" : "text-base-content/80 hover:text-primary"}`}
+              class={`text-sm font-medium transition-colors ${isActive(localizePath(locale, link.href)) ? "text-primary" : "text-base-content/80 hover:text-primary"}`}
             >
               {link.label}
             </a>
