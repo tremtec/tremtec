@@ -31,6 +31,16 @@ export default defineConfig({
     csp: true,
   },
 
+  i18n: {
+    defaultLocale: "en",
+    locales: ["en", "pt-br"],
+    fallback: { "pt-br": "en" },
+    routing: {
+      prefixDefaultLocale: false,
+      fallbackType: "rewrite",
+    },
+  },
+
   // Use Prism instead of Shiki for CSP compatibility
   markdown: {
     syntaxHighlight: "prism",
