@@ -5,7 +5,7 @@ import { routes } from "~/server/contants";
 import { getRelativeLocaleUrlList } from "astro:i18n";
 import { defineMiddleware, sequence } from "astro:middleware";
 
-// Whether the pathname is under `route` in any locale (/dashboard, /pt-br/dashboard)
+// Whether the pathname is under `route` in any configured locale
 const isInRoute = (pathname: string, route: string) =>
   getRelativeLocaleUrlList(route).some((url) =>
     pathname.startsWith(url.replace(/\/$/, "")),
