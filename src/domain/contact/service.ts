@@ -32,6 +32,7 @@ export class ContactService {
       `From: ${data.name} <${data.email}>`,
       data.company ? `Company: ${data.company}` : "",
       `Service: ${data.service}`,
+      `Language: ${data.locale}`,
       "",
       "Message:",
       data.message,

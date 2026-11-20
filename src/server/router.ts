@@ -4,6 +4,7 @@ import { auth } from "./auth";
 import { contact } from "./contact";
 import type { AppEnv } from "./env";
 import { health } from "./health";
+import { me } from "./me";
 import { createServices } from "./services";
 import { users } from "./users";
 
@@ -17,6 +18,7 @@ export const app = new Hono<AppEnv>()
   .use(provideServices)
   .route("/auth", auth)
   .route("/contact", contact)
+  .route("/me", me)
   .route("/users", users)
   .route("/healthcheck", health);
 

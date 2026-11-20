@@ -3,7 +3,8 @@ import ContactForm from "~/ui/components/ContactForm.astro";
 import Layout from "~/ui/components/layouts/Layout.astro";
 import { contactContent } from "~/ui/contents/contact";
 
-const { metadata, hero, form, trustSignals } = contactContent;
+const { metadata, hero, form, trustSignals } =
+  contactContent[Astro.locals.locale];
 ---
 
 <Layout title={metadata.title} description={metadata.description}>

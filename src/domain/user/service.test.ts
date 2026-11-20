@@ -45,11 +45,16 @@ describe("isAdminEmail", () => {
 describe("signIn", () => {
   it("creates verified tremtec.com users as active admins", async () => {
     const repo = stubRepo();
-    await createUserService(repo).signIn(identity("ana@tremtec.com"), true);
+    await createUserService(repo).signIn(
+      identity("ana@tremtec.com"),
+      true,
+      "en",
+    );
 
     expect(repo.upsertFromSignIn).toHaveBeenCalledWith(expect.anything(), {
       role: "admin",
       status: "active",
+      locale: "en",
     });
   });
 
@@ -57,19 +62,30 @@ describe("signIn", () => {
     const repo = stubRepo();
     const service = createUserService(repo);
 
-    await service.signIn(identity("bob@example.com"), true);
-    await service.signIn(identity("eve@tremtec.com"), false);
+    await service.signIn(identity("bob@example.com"), true, "pt-br");
+    await service.signIn(identity("eve@tremtec.com"), false, "en");
 
     expect(repo.upsertFromSignIn).toHaveBeenNthCalledWith(
       1,
       expect.anything(),
-      { role: "user", status: "pending" },
+      { role: "user", status: "pending", locale: "pt-br" },
     );
     expect(repo.upsertFromSignIn).toHaveBeenNthCalledWith(
       2,
       expect.anything(),
-      { role: "user", status: "pending" },
+      { role: "user", status: "pending", locale: "en" },
     );
+  });
+});
+
+describe("setLocale", () => {
+  it("delegates to the repository", async () => {
+    const repo = stubRepo();
+
+    expect(await createUserService(repo).setLocale(user.id, "pt-br")).toBe(
+      user,
+    );
+    expect(repo.setLocale).toHaveBeenCalledWith(user.id, "pt-br");
   });
 });
 

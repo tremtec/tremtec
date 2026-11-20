@@ -21,6 +21,7 @@ describe("ContactService", () => {
         company: "Acme Corp",
         message: "Hello, I need help with implementation.",
         service: SERVICE_OPTIONS[0],
+        locale: "en",
       };
 
       mockSendEmail.send.mockResolvedValue({ success: true });
@@ -47,6 +48,7 @@ describe("ContactService", () => {
         company: "TechCo",
         message: "This is a test message for diagnostics service.",
         service: "diagnostics",
+        locale: "pt-br",
       };
 
       mockSendEmail.send.mockResolvedValue({ success: true });
@@ -57,6 +59,7 @@ describe("ContactService", () => {
       expect(sentPayload.text).toContain("From: Jane Doe <jane@example.com>");
       expect(sentPayload.text).toContain("Company: TechCo");
       expect(sentPayload.text).toContain("Service: diagnostics");
+      expect(sentPayload.text).toContain("Language: pt-br");
       expect(sentPayload.text).toContain("Message:");
       expect(sentPayload.text).toContain(
         "This is a test message for diagnostics service.",
@@ -70,6 +73,7 @@ describe("ContactService", () => {
         email: "bob@example.com",
         message: "No company here, just contact.",
         service: "mentoring",
+        locale: "en",
       };
 
       mockSendEmail.send.mockResolvedValue({ success: true });
@@ -92,6 +96,7 @@ describe("ContactService", () => {
           email: "test@example.com",
           message: `Testing service option: ${serviceOption}`,
           service: serviceOption,
+          locale: "en",
         };
 
         await service.submitContact(form);
@@ -108,6 +113,7 @@ describe("ContactService", () => {
         email: "error@example.com",
         message: "This will cause an error.",
         service: "other",
+        locale: "en",
       };
 
       const error = new Error("Email failed to send");

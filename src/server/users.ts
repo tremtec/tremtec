@@ -6,44 +6,28 @@
  */
 
 import { zValidator } from "@hono/zod-validator";
-import { Hono } from "hono";
-import { getCookie } from "hono/cookie";
-import { createMiddleware } from "hono/factory";
-import { config } from "~/config";
-import { SESSION_COOKIE_NAME } from "~/domain/auth/constants";
-import { resolveSessionUser } from "~/domain/auth/service";
+import { type Context, Hono } from "hono";
 import {
   updateUserRequestSchema,
   userIdParamSchema,
 } from "~/domain/user/schema";
-import { isHtmxRequest } from "~/lib/htmx";
-import { isAdmin } from "~/lib/session";
+import { usersContent } from "~/ui/contents/users";
 import type { AppEnv } from "./env";
+import { requireAdmin } from "./guards";
+import { requestLocale } from "./locale";
 
-const requireAdmin = createMiddleware<AppEnv>(async (c, next) => {
-  // Custom header blocks cross-site form posts on top of the SameSite cookie
-  if (!isHtmxRequest(c)) return c.json({ error: "Bad request" }, 400);
-
-  const user = await resolveSessionUser(
-    getCookie(c, SESSION_COOKIE_NAME),
-    c.var.services.users,
-    config.SESSION_SECRET,
-  );
-  if (!user) return c.json({ error: "Unauthorized" }, 401);
-  if (!isAdmin(user)) {
-    return c.json({ error: "Forbidden" }, 403);
-  }
-
-  c.set("user", user);
-  await next();
-});
-
-const failureMessage = {
-  self: "You cannot change your own account",
-  not_found: "User not found",
-} as const;
+const failureKey = { self: "self", not_found: "notFound" } as const;
 
 const failureStatus = { self: 409, not_found: 404 } as const;
+
+/** The message follows the acting admin's locale. */
+const failureMessage = (
+  c: Context<AppEnv>,
+  reason: keyof typeof failureKey,
+) => {
+  const { errors } = usersContent[requestLocale(c, c.get("user"))];
+  return errors[failureKey[reason]];
+};
 
 export const users = new Hono<AppEnv>()
   .use(requireAdmin)
@@ -61,7 +45,7 @@ export const users = new Hono<AppEnv>()
 
       if (!result.ok) {
         return c.json(
-          { error: failureMessage[result.reason] },
+          { error: failureMessage(c, result.reason) },
           failureStatus[result.reason],
         );
       }
@@ -75,7 +59,7 @@ export const users = new Hono<AppEnv>()
 
     if (!result.ok) {
       return c.json(
-        { error: failureMessage[result.reason] },
+        { error: failureMessage(c, result.reason) },
         failureStatus[result.reason],
       );
     }

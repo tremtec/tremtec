@@ -1,5 +1,12 @@
 import { SESSION_COOKIE_NAME } from "~/domain/auth/constants";
 import { resolveSessionUser } from "~/domain/auth/service";
+import { LOCALE_COOKIE_NAME } from "~/domain/shared/locale";
+import {
+  homeRedirect,
+  localizePath,
+  resolveLocale,
+  splitLocale,
+} from "~/lib/i18n";
 import { isAdmin } from "~/lib/session";
 import { isPrivateRoute, routes } from "~/server/contants";
 import { defineMiddleware, sequence } from "astro:middleware";
@@ -25,12 +32,29 @@ const servicesMiddleware = defineMiddleware(async (context, next) => {
   return next();
 });
 
+// First visit to `/` goes to the preferred locale. The answer depends on both headers.
+const homeMiddleware = defineMiddleware(async (context, next) => {
+  if (context.isPrerendered || context.url.pathname !== routes.public.home) {
+    return next();
+  }
+
+  const target = homeRedirect(
+    context.url.pathname,
+    context.cookies.get(LOCALE_COOKIE_NAME)?.value,
+    context.request.headers.get("accept-language"),
+  );
+  const response = target ? context.redirect(target) : await next();
+  response.headers.set("Vary", "Accept-Language, Cookie");
+  return response;
+});
+
 const authMiddleware = defineMiddleware(async (context, next) => {
   context.locals.title = "New title";
 
   const pathname = context.url.pathname;
-  const needsSession =
-    isPrivateRoute(pathname) || pathname.startsWith(routes.public.login);
+  const { locale: pathLocale, path } = splitLocale(pathname);
+  const isLogin = path.startsWith(routes.public.login);
+  const needsSession = isPrivateRoute(pathname) || isLogin;
 
   // Only hit the database where the session matters
   if (needsSession) {
@@ -46,11 +70,23 @@ const authMiddleware = defineMiddleware(async (context, next) => {
 
   const user = context.locals.user;
 
+  // Cookies and headers do not exist while prerendering
+  context.locals.locale =
+    isPrivateRoute(pathname) && !context.isPrerendered
+      ? resolveLocale({
+          user,
+          cookie: context.cookies.get(LOCALE_COOKIE_NAME)?.value,
+          acceptLanguage: context.request.headers.get("accept-language"),
+        })
+      : pathLocale;
+
   if (isPrivateRoute(pathname) && !user) {
-    return context.redirect(routes.public.login);
+    return context.redirect(
+      localizePath(context.locals.locale, routes.public.login),
+    );
   }
 
-  if (pathname.startsWith(routes.public.login) && user) {
+  if (isLogin && user) {
     return context.redirect(routes.private.dashboard);
   }
 
@@ -65,5 +101,6 @@ const authMiddleware = defineMiddleware(async (context, next) => {
 export const onRequest = sequence(
   loggingMiddleware,
   servicesMiddleware,
+  homeMiddleware,
   authMiddleware,
 );

@@ -36,11 +36,11 @@ function buildSuccessHtml(message: string): string {
   return `<div class="alert alert-success">${message}</div>`;
 }
 
-function buildRetryErrorHtml(message: string): string {
+function buildRetryErrorHtml(message: string, retry: string): string {
   return `<div class="alert alert-warning">
     <span>${message}</span>
     <button type="button" class="btn btn-sm btn-ghost" onclick="document.getElementById('contact-form').reset(); htmx.trigger('#contact-form', 'reset')">
-      Retry
+      ${retry}
     </button>
   </div>`;
 }
@@ -55,15 +55,17 @@ export const contact = new Hono<Env>().post(
       },
     };
 
+    const formData = c.req.valid("form");
+    const { form } = contactContent[formData.locale];
+
     try {
-      const formData = c.req.valid("form");
       const service = new ContactService(emailProvider);
       const result = await service.submitContact(formData);
 
       console.log("[email] submit contact result", result);
 
       if (isHtmxRequest(c)) {
-        return c.html(buildSuccessHtml(contactContent.form.success));
+        return c.html(buildSuccessHtml(form.success));
       }
       return c.json({ success: true, dev: !c.env?.EMAIL });
     } catch (error) {
@@ -94,7 +96,7 @@ export const contact = new Hono<Env>().post(
 
       console.error("Contact error:", error);
       if (isHtmxRequest(c)) {
-        return c.html(buildRetryErrorHtml(contactContent.form.error), 500);
+        return c.html(buildRetryErrorHtml(form.error, form.retry), 500);
       }
       return c.json({ error: "Failed to process submission" }, 500);
     }

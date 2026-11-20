@@ -49,6 +49,9 @@ export const updateUserRequestSchema = z
   });
 export type UpdateUserRequest = z.infer<typeof updateUserRequestSchema>;
 
+export const updateMeRequestSchema = z.object({ locale: localeEnum });
+export type UpdateMeRequest = z.infer<typeof updateMeRequestSchema>;
+
 export const listUsersQuerySchema = paginationSchema.extend({
   q: z.string().trim().max(100).optional(),
   role: roleEnum.optional(),

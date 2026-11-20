@@ -5,6 +5,7 @@
  * how the data is stored, so it can be tested with a stub repository.
  */
 
+import type { Locale } from "~/domain/shared/locale";
 import type { UserRepository } from "./repository";
 import type {
   ListUsersQuery,
@@ -31,19 +32,25 @@ export function createUserService(repo: UserRepository) {
   return {
     /**
      * Creates the user on first sign in, or refreshes profile and last login.
-     * Role and status are only decided at creation, so admins stay in control after.
+     * Role, status and locale are only decided at creation, so admins stay in control after.
      */
-    signIn(identity: NewUser, emailVerified: boolean): Promise<User> {
+    signIn(
+      identity: NewUser,
+      emailVerified: boolean,
+      locale: Locale,
+    ): Promise<User> {
       const admin = isAdminEmail(identity.email, emailVerified);
       return repo.upsertFromSignIn(
         identity,
         admin
-          ? { role: "admin", status: "active" }
-          : { role: "user", status: "pending" },
+          ? { role: "admin", status: "active", locale }
+          : { role: "user", status: "pending", locale },
       );
     },
 
     getUser: (id: string) => repo.findById(id),
+
+    setLocale: (id: string, locale: Locale) => repo.setLocale(id, locale),
 
     listUsers: (query: ListUsersQuery) => repo.list(query),
 

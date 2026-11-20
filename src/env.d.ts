@@ -3,6 +3,8 @@ declare namespace App {
 
   interface Locals {
     title: string;
+    /** Locale of the request: from the URL on public pages, from `resolveLocale` on private ones. */
+    locale: import("./domain/shared/locale").Locale;
     user: CurrentUser | undefined;
     /** Request-scoped services, provided by the middleware. */
     services: import("./server/services").Services;

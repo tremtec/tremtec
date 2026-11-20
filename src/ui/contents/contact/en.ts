@@ -35,11 +35,12 @@ export interface ContactContent {
     submit: string;
     success: string;
     error: string;
+    retry: string;
   };
   trustSignals: TrustSignal[];
 }
 
-export const contactContent: ContactContent = {
+export const en: ContactContent = {
   metadata: {
     title: "Contact Us - TremTec",
     description:
@@ -89,6 +90,7 @@ export const contactContent: ContactContent = {
     success: "Thanks! We'll be in touch within 24 hours.",
     error:
       "Something went wrong. Please try again or email us at hello@tremtec.com",
+    retry: "Retry",
   },
   trustSignals: [
     {

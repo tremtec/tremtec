@@ -10,8 +10,10 @@ import {
   signSession,
 } from "~/domain/auth/service";
 import type { Provider } from "~/domain/shared/provider";
-import type { AppEnv } from "./env";
+import { localizePath } from "~/lib/i18n";
 import { routes } from "./contants";
+import type { AppEnv } from "./env";
+import { requestLocale } from "./locale";
 
 const sessionCookieOptions = () => ({
   ...getSessionCookieConfig(),
@@ -28,15 +30,21 @@ async function startSession(
   payload: Record<string, unknown> | undefined,
   emailVerified: boolean,
 ) {
-  const failed = `${routes.public.login}?error=${provider}_auth_failed`;
+  const locale = requestLocale(c);
+  const login = localizePath(locale, routes.public.login);
+  const failed = `${login}?error=${provider}_auth_failed`;
   if (!payload) return c.redirect(failed);
 
   const identity = extractOAuthUser(provider, payload);
   if (!identity) return c.redirect(failed);
 
-  const user = await c.var.services.users.signIn(identity, emailVerified);
+  const user = await c.var.services.users.signIn(
+    identity,
+    emailVerified,
+    locale,
+  );
   if (user.status === "suspended") {
-    return c.redirect(`${routes.public.login}?error=suspended`);
+    return c.redirect(`${login}?error=suspended`);
   }
 
   setCookie(
@@ -80,5 +88,5 @@ export const auth = new Hono<AppEnv>()
       maxAge: 0,
     });
 
-    return c.redirect(routes.public.login);
+    return c.redirect(localizePath(requestLocale(c), routes.public.login));
   });
