@@ -33,16 +33,17 @@ src/
 │   ├── user/
 │   └── shared/
 ├── server/      # Hono routes (auth, contact, health)
-├── pages/       # Astro routes, blog and RSS
-├── content/     # Blog posts and products (content collections)
+├── pages/       # Astro routes, blog and RSS (public pages in [...locale]/)
+├── content/     # Blog posts (per locale) and products (content collections)
 ├── ui/          # Astro components, styles, assets
-├── lib/         # API client, errors, helpers
+│   └── contents/  # Copy: one folder per module with en.ts and pt-br.ts
+├── lib/         # API client, errors, i18n, formatting, helpers
 ├── middleware.ts
 └── config.ts    # Environment validation
 migrations/      # D1 schema migrations
 scripts/         # Local dev helpers (seed data)
 infra/           # Pulumi program
-docs/            # Mission & values, board meeting notes
+docs/            # Mission & values, board meeting notes, ADRs (docs/adr/)
 .github/         # CI/CD workflows
 roadmap.md
 ```

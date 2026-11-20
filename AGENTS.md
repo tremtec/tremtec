@@ -34,6 +34,17 @@ Users live in D1 (`DB` binding, schema in `migrations/`). Environment is validat
 
 The CSP is on: no inline `style=` or `on*=` attributes in UI code. Use classes and htmx attributes.
 
+## Internationalization
+
+`en` (no URL prefix) and `pt-br` (`/pt-br/`). Decisions and the "Adding a locale" checklist are in [docs/adr/0001-i18n.md](docs/adr/0001-i18n.md). Locales are listed only in `src/domain/shared/locale.ts`.
+
+- **Copy**: typed dictionaries in `src/ui/contents/<module>/` (`en.ts` defines the shape, `pt-br.ts` is typed against it, `index.ts` exports `Dictionary<Shape>`). Reference: `src/ui/contents/login/`. Components index them with `Astro.locals.locale` and never name a locale.
+- **Routing**: public pages live in `src/pages/[...locale]/`, with `getStaticPaths` from `localeStaticPaths()`. Hrefs stay unprefixed and go through `localizePath`. Reference: `src/pages/[...locale]/login.astro`, `src/lib/i18n.ts`.
+- **Request locale**: `src/middleware.ts` sets `locals.locale` (URL for public pages, `resolveLocale` for the app and API) and redirects only `/` on a first visit.
+- **Formatting**: `formatDate`, `formatNumber`, `timeAgo` and `plural` in `src/lib/format.ts`, never inline `Intl` or `toLocale*String`.
+- **Blog**: `src/content/blog/<locale>/<slug>.md`. Missing translations fall back to English through `src/lib/blog.ts`.
+- **Switchers**: `src/ui/components/LocaleSwitcher.astro` (public, links plus a cookie script) and `src/ui/components/app/shell/LocaleSelect.astro` (app, `PATCH /api/me`).
+
 ## Conventions
 
 - TypeScript strict, no `any`.
@@ -46,13 +57,13 @@ The CSP is on: no inline `style=` or `on*=` attributes in UI code. Use classes a
 
 1. Create `src/domain/<feature>/` with `schema.ts`, `repository.ts` and `service.ts`.
 2. Register the service in `src/server/services.ts` and add routes in `src/server/`.
-3. Add UI in `src/ui/` and pages in `src/pages/`.
+3. Add UI in `src/ui/`, with its copy in a dictionary for every locale, and pages in `src/pages/` (public pages in `src/pages/[...locale]/`).
 4. Add repository and service tests, then run lint and tests.
 
 ## Notes
 
 - `astro check` does not support TypeScript 7 yet, so `typescript` stays on 6.x.
 - Pulumi packages are intentionally not upgraded with the rest (known to break).
-- Blog posts and products live in `src/content/`.
+- Blog posts and products live in `src/content/` (posts per locale in `src/content/blog/<locale>/`).
 - Pull requests to `main` need the `Lint`, `Test` and `Build` checks (`.github/workflows/quality-gateway.yml`) and `Analyze (javascript-typescript)` (`.github/workflows/codeql.yml`).
 - Pushing to `main` deploys the `dev` stack via `.github/workflows/deploy.yml`, and pushing a tag `X.Y.Z` (numbers only, so not `v1.2.3` or `1.2.3-rc`) deploys production via `.github/workflows/release.yml`. README "Deployment" lists the required secrets and the manual fallback.
