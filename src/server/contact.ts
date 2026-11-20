@@ -8,7 +8,7 @@ import { ZodError } from "zod";
 import { contactSchema } from "~/domain/contact/schema";
 import { ContactService } from "~/domain/contact/service";
 import { isHtmxRequest } from "~/lib/htmx";
-import { contactContent } from "~/ui/contents/contact";
+import { ui } from "~/i18n/ui";
 
 type Env = {
   Bindings: {
@@ -63,7 +63,7 @@ export const contact = new Hono<Env>().post(
       console.log("[email] submit contact result", result);
 
       if (isHtmxRequest(c)) {
-        return c.html(buildSuccessHtml(contactContent.form.success));
+        return c.html(buildSuccessHtml(ui.en["contact.form.success"]));
       }
       return c.json({ success: true, dev: !c.env?.EMAIL });
     } catch (error) {
@@ -94,7 +94,7 @@ export const contact = new Hono<Env>().post(
 
       console.error("Contact error:", error);
       if (isHtmxRequest(c)) {
-        return c.html(buildRetryErrorHtml(contactContent.form.error), 500);
+        return c.html(buildRetryErrorHtml(ui.en["contact.form.error"]), 500);
       }
       return c.json({ error: "Failed to process submission" }, 500);
     }
