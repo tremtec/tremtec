@@ -1,0 +1,11 @@
+---
+import { useTranslations } from "~/i18n/utils";
+import ContactSection from "~/ui/components/contact/ContactSection.astro";
+import Layout from "~/ui/components/layouts/Layout.astro";
+
+const t = useTranslations(Astro.currentLocale);
+---
+
+<Layout title={t("contact.title")} description={t("contact.description")} path="contact">
+  <ContactSection />
+</Layout>

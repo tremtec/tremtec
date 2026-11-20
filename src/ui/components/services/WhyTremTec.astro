@@ -1,0 +1,32 @@
+---
+import { useTranslations } from "~/i18n/utils";
+
+const t = useTranslations(Astro.currentLocale);
+---
+
+<!-- Comparison Banner -->
+<section class="bg-base-200 px-6 py-16 border-t border-base-300">
+  <div class="max-w-6xl mx-auto">
+    <h3 class="text-2xl font-bold text-base-content mb-8 text-center">
+      {t("services.why.title")}
+    </h3>
+    <div class="grid md:grid-cols-4 gap-6">
+      <div class="text-center">
+        <p class="text-3xl font-bold text-primary mb-2">{t("services.why.stat1.value")}</p>
+        <p class="text-sm text-base-content/70">{t("services.why.stat1.label")}</p>
+      </div>
+      <div class="text-center">
+        <p class="text-3xl font-bold text-primary mb-2">{t("services.why.stat2.value")}</p>
+        <p class="text-sm text-base-content/70">{t("services.why.stat2.label")}</p>
+      </div>
+      <div class="text-center">
+        <p class="text-3xl font-bold text-primary mb-2">{t("services.why.stat3.value")}</p>
+        <p class="text-sm text-base-content/70">{t("services.why.stat3.label")}</p>
+      </div>
+      <div class="text-center">
+        <p class="text-3xl font-bold text-primary mb-2">{t("services.why.stat4.value")}</p>
+        <p class="text-sm text-base-content/70">{t("services.why.stat4.label")}</p>
+      </div>
+    </div>
+  </div>
+</section>

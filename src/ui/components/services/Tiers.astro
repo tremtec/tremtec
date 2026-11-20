@@ -1,0 +1,142 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { defaultLang } from "~/i18n/ui";
+import { useTranslations } from "~/i18n/utils";
+
+const t = useTranslations(Astro.currentLocale);
+const locale = Astro.currentLocale ?? defaultLang;
+const contactUrl = getRelativeLocaleUrl(locale, "contact");
+---
+
+<!-- Hero -->
+<section class="px-6 py-20 max-w-6xl mx-auto">
+  <div class="text-center mb-16">
+    <h1 class="text-5xl font-bold text-base-content mb-6">
+      {t("services.hero.title")}
+    </h1>
+    <p class="text-xl text-base-content/70 max-w-3xl mx-auto">
+      {t("services.hero.description")}
+    </p>
+  </div>
+
+  <!-- Three Core Services -->
+  <div class="grid md:grid-cols-3 gap-8 mb-20">
+    <!-- Fractional CTO -->
+    <div class="bg-base-100 border border-base-300 rounded-lg p-8 hover:shadow-lg transition">
+      <div class="h-12 w-12 bg-primary/10 rounded-lg mb-4 flex items-center justify-center">
+        <span class="text-primary text-xl">🔍</span>
+      </div>
+      <h3 class="text-2xl font-bold text-base-content mb-3">{t("services.cto.title")}</h3>
+      <p class="text-base-content/70 mb-6">
+        {t("services.cto.description")}
+      </p>
+
+      <div class="bg-base-200 rounded p-4 mb-6">
+        <p class="text-sm text-base-content/60 uppercase tracking-wide font-semibold mb-2">{t("services.tier.investment")}</p>
+        <p class="text-3xl font-bold text-base-content">{t("services.cto.price")}</p>
+        <p class="text-sm text-base-content/70 mt-1">{t("services.cto.duration")}</p>
+      </div>
+
+      <div class="space-y-3 mb-6">
+        <p class="text-sm text-base-content/80">
+          ✓ {t("services.cto.item1")}
+        </p>
+        <p class="text-sm text-base-content/80">
+          ✓ {t("services.cto.item2")}
+        </p>
+        <p class="text-sm text-base-content/80">
+          ✓ {t("services.cto.item3")}
+        </p>
+      </div>
+
+      <p class="text-xs text-base-content/60 mb-4">
+        <strong>{t("services.tier.team")}</strong> {t("services.cto.team")}
+      </p>
+
+      <a href={contactUrl} class="text-primary font-semibold hover:text-primary/80 transition">
+        {t("services.cto.cta")}
+      </a>
+    </div>
+
+    <!-- Implementation -->
+    <div class="bg-base-100 border-2 border-primary rounded-lg p-8 shadow-lg hover:shadow-xl transition relative">
+      <div class="absolute -top-4 left-8 bg-primary text-base-100 px-3 py-1 rounded-full text-xs font-bold">
+        {t("services.implementation.badge")}
+      </div>
+
+      <div class="h-12 w-12 bg-primary/10 rounded-lg mb-4 flex items-center justify-center">
+        <span class="text-primary text-xl">⚙️</span>
+      </div>
+      <h3 class="text-2xl font-bold text-base-content mb-3">{t("services.implementation.title")}</h3>
+      <p class="text-base-content/70 mb-6">
+        {t("services.implementation.description")}
+      </p>
+
+      <div class="bg-primary/10 rounded p-4 mb-6">
+        <p class="text-sm text-base-content/60 uppercase tracking-wide font-semibold mb-2">{t("services.tier.investment")}</p>
+        <p class="text-3xl font-bold text-base-content">{t("services.implementation.price")}</p>
+        <p class="text-sm text-base-content/70 mt-1">{t("services.implementation.duration")}</p>
+      </div>
+
+      <div class="space-y-3 mb-6">
+        <p class="text-sm text-base-content/80">
+          ✓ {t("services.implementation.item1")}
+        </p>
+        <p class="text-sm text-base-content/80">
+          ✓ {t("services.implementation.item2")}
+        </p>
+        <p class="text-sm text-base-content/80">
+          ✓ {t("services.implementation.item3")}
+        </p>
+        <p class="text-sm text-base-content/80">
+          ✓ {t("services.implementation.item4")}
+        </p>
+      </div>
+
+      <p class="text-xs text-base-content/60 mb-4">
+        <strong>{t("services.tier.team")}</strong> {t("services.implementation.team")}
+      </p>
+
+      <a href={contactUrl} class="text-primary font-semibold hover:text-primary/80 transition">
+        {t("services.implementation.cta")}
+      </a>
+    </div>
+
+    <!-- Mentoring -->
+    <div class="bg-base-100 border border-base-300 rounded-lg p-8 hover:shadow-lg transition">
+      <div class="h-12 w-12 bg-primary/10 rounded-lg mb-4 flex items-center justify-center">
+        <span class="text-primary text-xl">🎓</span>
+      </div>
+      <h3 class="text-2xl font-bold text-base-content mb-3">{t("services.mentoring.title")}</h3>
+      <p class="text-base-content/70 mb-6">
+        {t("services.mentoring.description")}
+      </p>
+
+      <div class="bg-base-200 rounded p-4 mb-6">
+        <p class="text-sm text-base-content/60 uppercase tracking-wide font-semibold mb-2">{t("services.tier.investment")}</p>
+        <p class="text-3xl font-bold text-base-content">{t("services.mentoring.price")}</p>
+        <p class="text-sm text-base-content/70 mt-1">{t("services.mentoring.duration")}</p>
+      </div>
+
+      <div class="space-y-3 mb-6">
+        <p class="text-sm text-base-content/80">
+          ✓ {t("services.mentoring.item1")}
+        </p>
+        <p class="text-sm text-base-content/80">
+          ✓ {t("services.mentoring.item2")}
+        </p>
+        <p class="text-sm text-base-content/80">
+          ✓ {t("services.mentoring.item3")}
+        </p>
+      </div>
+
+      <p class="text-xs text-base-content/60 mb-4">
+        <strong>{t("services.tier.team")}</strong> {t("services.mentoring.team")}
+      </p>
+
+      <a href={contactUrl} class="text-primary font-semibold hover:text-primary/80 transition">
+        {t("services.mentoring.cta")}
+      </a>
+    </div>
+  </div>
+</section>

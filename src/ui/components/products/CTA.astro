@@ -1,0 +1,20 @@
+---
+import { useTranslations } from "~/i18n/utils";
+
+const t = useTranslations(Astro.currentLocale);
+---
+
+<!-- CTA -->
+<section class="bg-base-200 px-6 py-20">
+  <div class="max-w-4xl mx-auto text-center">
+    <h2 class="text-4xl font-bold mb-6 text-base-content">
+      {t("products.cta.title")}
+    </h2>
+    <p class="text-lg text-base-content/70 mb-8 max-w-2xl mx-auto">
+      {t("products.cta.description")}
+    </p>
+    <a href="mailto:hello@tremtec.com?subject=Custom%20Tool%20Inquiry" class="btn btn-primary font-bold">
+      {t("products.cta.button")}
+    </a>
+  </div>
+</section>
