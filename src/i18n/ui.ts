@@ -403,8 +403,8 @@ export const ui = {
     // login
     "login.title": "Entrar - TremTec",
     "login.welcome": "Bem-vindo de volta, Inovador.",
-    "login.github": "Entrar com o GitHub",
-    "login.google": "Entrar com o Google",
+    "login.github": "Entrar com GitHub",
+    "login.google": "Entrar com Google",
     "login.divider": "Ou continue com o e-mail",
     "login.email.placeholder": "Digite o seu e-mail",
     "login.email.button": "Continuar com o E-mail",
