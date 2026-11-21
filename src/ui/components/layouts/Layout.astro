@@ -5,7 +5,6 @@ import { getRelativeLocaleUrl } from "astro:i18n";
 import { defaultLang } from "~/i18n/ui";
 import { useTranslations } from "~/i18n/utils";
 import Footer from "~/ui/components/Footer.astro";
-import LanguageSwitcher from "~/ui/components/LanguageSwitcher.astro";
 import Logo from "~/ui/components/Logo.astro";
 import Navbar from "~/ui/components/Navbar.astro";
 import OpenGraph from "~/ui/components/OpenGraph.astro";
@@ -20,8 +19,6 @@ interface Props {
   updatedTime?: string;
   section?: string;
   hideNavbar?: boolean;
-  /** This page's path without the locale, for the language switcher. */
-  path?: string;
 }
 
 const t = useTranslations(Astro.currentLocale);
@@ -50,7 +47,6 @@ const {
   updatedTime,
   section,
   hideNavbar = false,
-  path,
 } = Astro.props;
 ---
 
@@ -89,7 +85,7 @@ const {
         {hideNavbar 
           ? <slot />
           : (
-            <Navbar path={path} />
+            <Navbar />
 
             <!-- Content -->
             <div class="w-full flex-1 py-4 mt-20">
@@ -144,7 +140,6 @@ const {
             >
               {t("nav.getStarted")}
             </a>
-            <LanguageSwitcher path={path} />
           </li>
         </ul>
       </div>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { defaultLang, languages, ui } from "./ui";
+import { ui } from "./ui";
 import { useTranslations } from "./utils";
 
 describe("useTranslations", () => {
@@ -31,12 +31,5 @@ describe("ui", () => {
         expect(value.trim()).not.toBe("");
       }
     }
-  });
-});
-
-describe("languages", () => {
-  it("follows the order of i18n.locales", () => {
-    expect(Object.keys(languages)).toEqual(["en", "pt-br"]);
-    expect(defaultLang).toBe("en");
   });
 });

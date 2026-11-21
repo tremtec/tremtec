@@ -3,7 +3,6 @@ import { defaultLang } from "~/i18n/ui";
 import { useTranslations } from "~/i18n/utils";
 import GitHubButton from "~/ui/components/GitHubButton.astro";
 import GoogleButton from "~/ui/components/GoogleButton.astro";
-import LanguageSwitcher from "~/ui/components/LanguageSwitcher.astro";
 import Logo from "~/ui/components/Logo.astro";
 import { getRelativeLocaleUrl } from "astro:i18n";
 
@@ -77,10 +76,6 @@ const locale = Astro.currentLocale ?? defaultLang;
           >{t("login.tos.privacy")}
         </a>.
       </p>
-
-      <div class="flex justify-center">
-        <LanguageSwitcher path="login" />
-      </div>
     </div>
   </div>
 </div>

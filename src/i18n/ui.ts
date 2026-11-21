@@ -1,8 +1,3 @@
-export const languages = {
-  en: "English",
-  "pt-br": "Português",
-};
-
 export const defaultLang = "en";
 
 export const ui = {
@@ -16,7 +11,6 @@ export const ui = {
     "nav.getStarted": "Get Started",
     "nav.openMenu": "Open mobile menu",
     "logo.alt": "TremTec Logo",
-    "switcher.label": "Language",
     "footer.description":
       "Flexible engineering teams that scale with your project. Your team in control.",
     "footer.services.title": "Services",
@@ -309,7 +303,6 @@ export const ui = {
     "nav.getStarted": "Começar",
     "nav.openMenu": "Abrir menu",
     "logo.alt": "Logo da TremTec",
-    "switcher.label": "Idioma",
     "footer.description":
       "Times de engenharia flexíveis que escalam junto com o seu projeto. O seu time no controle.",
     "footer.services.title": "Serviços",

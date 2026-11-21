@@ -2,14 +2,8 @@
 import { getRelativeLocaleUrl } from "astro:i18n";
 import { defaultLang } from "~/i18n/ui";
 import { useTranslations } from "~/i18n/utils";
-import LanguageSwitcher from "~/ui/components/LanguageSwitcher.astro";
 import Logo from "~/ui/components/Logo.astro";
 
-interface Props {
-  path?: string;
-}
-
-const { path } = Astro.props;
 const t = useTranslations(Astro.currentLocale);
 const locale = Astro.currentLocale ?? defaultLang;
 
@@ -55,7 +49,6 @@ const isActive = (href: string) => pathname === trim(href);
 
       <!-- Right: CTA -->
       <div class="hidden md:flex items-center md:gap-2 lg:gap-4">
-        <LanguageSwitcher path={path} />
         <a
           href={getRelativeLocaleUrl(locale, "login")}
           class="text-sm font-medium whitespace-nowrap text-base-content/80 hover:text-primary transition-colors"

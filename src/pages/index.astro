@@ -1,5 +1,6 @@
 ---
 import "~/ui/styles/global.css";
+import { getRelativeLocaleUrl } from "astro:i18n";
 import { useTranslations } from "~/i18n/utils";
 import About from "~/ui/components/landing/About.astro";
 import CTA from "~/ui/components/landing/CTA.astro";
@@ -10,7 +11,13 @@ import Testimonials from "~/ui/components/landing/Testimonials.astro";
 import TrustedBy from "~/ui/components/landing/TrustedBy.astro";
 import Layout from "~/ui/components/layouts/Layout.astro";
 
+if (Astro.preferredLocale && Astro.preferredLocale !== Astro.currentLocale) {
+  return Astro.redirect(getRelativeLocaleUrl(Astro.preferredLocale));
+}
+
 const t = useTranslations(Astro.currentLocale);
+
+export const prerender = false;
 ---
 
 <Layout title={t("home.title")} description={t("home.description")}>
