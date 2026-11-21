@@ -1,0 +1,15 @@
+$ test ! -e src/ui/components/LanguageSwitcher.astro && echo gone
+gone
+
+$ grep -rniE 'switcher' src; echo "(exit $?)"
+(exit 1)
+
+$ grep -rnE '\blanguages\b' src --include='*.ts' --include='*.astro'; echo "(exit $?)"
+(exit 1)
+
+$ grep -rnE '\bpath=|path\?: string|const \{ path \}' src --include='*.astro'; echo "(exit $?)"
+(exit 1)
+
+$ grep -rln getRelativeLocaleUrlList src
+src/middleware.ts
+

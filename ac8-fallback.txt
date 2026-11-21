@@ -1,0 +1,7 @@
+$ curl -s -o /dev/null -w '%{http_code}\n' http://localhost:5120/pt-br/blog/
+200
+
+$ curl -s http://localhost:5120/pt-br/blog/ | grep -oE '<html lang="[^"]*"|<title>[^<]*</title>'
+<html lang="pt-br"
+<title>Blog - TremTec</title>
+

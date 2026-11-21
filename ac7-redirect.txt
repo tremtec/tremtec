@@ -1,0 +1,31 @@
+$ for h in 'pt-BR,pt;q=0.9,en;q=0.8' 'pt-br' 'en-US,en;q=0.9' 'en' 'pt-PT,pt;q=0.9,en;q=0.8' 'pt'; do printf '%-28s' "$h"; curl -s -o /dev/null -H "Accept-Language: $h" -w '%{http_code} %{redirect_url}\n' http://localhost:5120/; done
+pt-BR,pt;q=0.9,en;q=0.8     302 http://localhost:5120/pt-br/
+pt-br                       302 http://localhost:5120/pt-br/
+en-US,en;q=0.9              200 
+en                          200 
+pt-PT,pt;q=0.9,en;q=0.8     200 
+pt                          200 
+
+$ curl -s -o /dev/null -w '%{http_code} %{redirect_url}\n' http://localhost:5120/; curl -s http://localhost:5120/ | grep -oE '<html lang="[^"]*"'
+200 
+<html lang="en"
+
+$ curl -s -D - -o /dev/null -H 'Accept-Language: pt-BR,pt;q=0.9,en;q=0.8' http://localhost:5120/ | grep -iE '^(HTTP|location)'
+HTTP/1.1 302 Found
+location: /pt-br/
+
+$ for h in 'pt-BR,pt;q=0.9,en;q=0.8' 'en-US,en;q=0.9' 'pt-PT'; do curl -s -o /dev/null -H "Accept-Language: $h" -w '%{http_code} %{redirect_url}\n' http://localhost:5120/pt-br/; done
+200 
+200 
+200 
+
+$ for p in /services /contact /products /login /blog/; do curl -s -o /dev/null -H 'Accept-Language: pt-BR,pt;q=0.9,en;q=0.8' -w "$p %{http_code} %{redirect_url}\n" "http://localhost:5120$p"; done
+/services 200 
+/contact 200 
+/products 200 
+/login 200 
+/blog/ 200 
+
+$ curl -sL -H 'Accept-Language: pt-BR,pt;q=0.9,en;q=0.8' http://localhost:5120/ | grep -oE '<html lang="[^"]*"'
+<html lang="pt-br"
+

@@ -1,0 +1,7 @@
+$ git diff --stat origin/main...HEAD -- src/pages/blog src/pages/404.astro src/pages/dashboard src/pages/dashboard.astro src/ui/components/app src/ui/components/layouts/AppLayout.astro src/ui/components/ContactForm.astro src/ui/components/FormField.astro src/ui/components/GitHubButton.astro src/ui/components/GoogleButton.astro src/ui/components/OpenGraph.astro src/ui/contents src/content src/domain src/server/auth.ts
+ src/ui/components/app/shell/Sidebar.astro |   3 +-
+ src/ui/contents/contact.ts                | 113 ----------------
+ src/ui/contents/landing.ts                | 206 ------------------------------
+ src/ui/contents/login.ts                  |  15 ---
+ 4 files changed, 1 insertion(+), 336 deletions(-)
+

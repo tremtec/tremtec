@@ -1,0 +1,14 @@
+$ for p in / /login /pt-br/ /pt-br/login; do printf '%-13s' "$p"; curl -s "http://localhost:5120$p" | grep -oE '<html lang="[^"]*"|<title>[^<]*</title>' | tr '\n' ' '; echo; done
+/            <html lang="en" <title>TremTec - Build Trustworthy Software Faster</title> 
+/login       <html lang="en" <title>Sign In - TremTec</title> <title>GitHub</title> <title>Google</title> 
+/pt-br/      <html lang="pt-br" <title>TremTec - Construa Software Confiável Mais Rápido</title> 
+/pt-br/login <html lang="pt-br" <title>Entrar - TremTec</title> <title>GitHub</title> <title>Google</title> 
+
+$ for p in /pt-br/ /pt-br/login; do echo "== $p"; curl -s "http://localhost:5120$p" | grep -oE 'href="/(contact|services|products|login|blog)?/?"' | sort -u; done
+== /pt-br/
+== /pt-br/login
+
+$ for p in / /login; do echo "== $p"; curl -s "http://localhost:5120$p" | grep -oE 'href="/pt-br[^"]*"' | sort -u; done
+== /
+== /login
+

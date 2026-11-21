@@ -1,0 +1,26 @@
+$ for p in /services /contact /products /pt-br/services /pt-br/contact /pt-br/products; do printf '%-16s' "$p"; curl -s "http://localhost:5120$p" | grep -oE '<html lang="[^"]*"|<title>[^<]*</title>' | tr '\n' ' '; echo; done
+/services       <html lang="en" <title>Pricing - TremTec</title> 
+/contact        <html lang="en" <title>Contact Us - TremTec</title> 
+/products       <html lang="en" <title>Products - TremTec</title> 
+/pt-br/services <html lang="pt-br" <title>Preços - TremTec</title> 
+/pt-br/contact  <html lang="pt-br" <title>Fale Conosco - TremTec</title> 
+/pt-br/products <html lang="pt-br" <title>Produtos - TremTec</title> 
+
+$ for p in services contact products; do echo "== /pt-br/$p"; curl -s "http://localhost:5120/pt-br/$p" | grep -oE 'href="/(contact|services|products|login|blog)?/?"' | sort -u; done
+== /pt-br/services
+== /pt-br/contact
+== /pt-br/products
+
+$ for p in services contact products; do echo "== /$p"; curl -s "http://localhost:5120/$p" | grep -oE 'href="/pt-br[^"]*"' | sort -u; done
+== /services
+== /contact
+== /products
+
+$ curl -s http://localhost:5120/pt-br/services | grep -oE '<a href="[^"]*"[^>]*text-primary[^>]*>[^<]*' | head -3
+<a href="/pt-br/" class="text-sm font-medium transition-colors text-base-content/80 hover:text-primary" data-astro-source-file="/home/marco/w/marco-souza/tremtec-factory/002-astro-i18n/src/ui/components/Navbar.astro" data-astro-source-loc="43:14">Início
+<a href="/pt-br/services/" class="text-sm font-medium transition-colors text-primary" data-astro-source-file="/home/marco/w/marco-souza/tremtec-factory/002-astro-i18n/src/ui/components/Navbar.astro" data-astro-source-loc="43:14">Serviços
+<a href="/pt-br/products/" class="text-sm font-medium transition-colors text-base-content/80 hover:text-primary" data-astro-source-file="/home/marco/w/marco-souza/tremtec-factory/002-astro-i18n/src/ui/components/Navbar.astro" data-astro-source-loc="43:14">Produtos
+
+$ curl -s http://localhost:5120/pt-br/contact | grep -oE 'hx-post="[^"]*"|action="[^"]*"' | head
+hx-post="/api/contact"
+

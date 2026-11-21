@@ -1,0 +1,2 @@
+$ test -f dist/client/pt-br/index.html && test ! -e dist/client/index.html && echo ok
+ok

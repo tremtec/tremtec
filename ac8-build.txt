@@ -1,0 +1,4 @@
+$ for f in services pt-br/services pt-br/blog; do grep -o '<html lang="[^"]*"' dist/client/$f/index.html; done
+<html lang="en"
+<html lang="pt-br"
+<html lang="pt-br"

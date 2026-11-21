@@ -1,0 +1,21 @@
+$ grep -rln "pt-br" src | sort
+src/i18n/ui.ts
+src/i18n/utils.test.ts
+
+$ grep -rnE 'getLangFromUrl|useTranslatedPath|showDefaultLang' src; echo "(exit $?)"
+(exit 1)
+
+$ grep -rn "preferredLocale" src
+src/pages/index.astro:14:if (Astro.preferredLocale && Astro.preferredLocale !== Astro.currentLocale) {
+src/pages/index.astro:15:  return Astro.redirect(getRelativeLocaleUrl(Astro.preferredLocale));
+
+$ grep -n "prerender = false" src/pages/index.astro
+20:export const prerender = false;
+
+$ grep -nE 'preferredLocale|prerender' src/pages/pt-br/index.astro; echo "(exit $?)"
+(exit 1)
+
+$ git diff origin/main...HEAD --stat -- src/middleware.ts
+ src/middleware.ts | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
+

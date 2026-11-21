@@ -1,0 +1,17 @@
+$ for p in /dashboard /pt-br/dashboard /pt-br/dashboard/users; do curl -s -o /dev/null -w "$p %{http_code} %{redirect_url}\n" "http://localhost:5120$p"; done
+/dashboard 302 http://localhost:5120/login
+/pt-br/dashboard 302 http://localhost:5120/login
+/pt-br/dashboard/users 302 http://localhost:5120/login
+
+$ # S = signSession(seeded active non-admin uid, SESSION_SECRET)
+
+$ for p in /login /pt-br/login /pt-br/dashboard/users /pt-br/dashboard; do curl -s -o /dev/null -b "tremtec_session=<redacted: signed with a throwaway dummy secret>" -w "$p %{http_code} %{redirect_url}\n" "http://localhost:5120$p"; done
+/login 302 http://localhost:5120/dashboard
+/pt-br/login 302 http://localhost:5120/dashboard
+/pt-br/dashboard/users 302 http://localhost:5120/dashboard
+/pt-br/dashboard 200 
+
+$ grep -n getRelativeLocaleUrlList src/middleware.ts
+5:import { getRelativeLocaleUrlList } from "astro:i18n";
+10:  getRelativeLocaleUrlList(route).some((url) =>
+

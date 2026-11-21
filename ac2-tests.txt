@@ -1,0 +1,15 @@
+$ CI=true bun run test src/i18n/utils.test.ts
+$ vitest "src/i18n/utils.test.ts"
+
+ RUN  v5.1.1 /home/marco/w/marco-souza/tremtec-factory/002-astro-i18n
+
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  18:03:47
+   Duration  733ms (environment 90%, tests 4%, transform 3%, import 3%, worker 1%)
+
+
+$ grep -rn "languages" src/i18n; echo "(exit $?)"
+(exit 1)
+

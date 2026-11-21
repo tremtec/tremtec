@@ -1,0 +1,11 @@
+$ bun run lint && CI=true bun run test && bun run build
+Checked 130 files in 24ms. No fixes applied.
+18:05:28 [check] Getting diagnostics for Astro files in /home/marco/w/marco-souza/tremtec-factory/002-astro-i18n...
+Result (122 files): 
+- 0 errors
+- 0 warnings
+ Test Files  10 passed (10)
+      Tests  61 passed (61)
+18:05:40 [build] Server built in 2.07s
+18:05:40 [build] Complete!
+exit codes: lint=0 test=0 build=0

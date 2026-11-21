@@ -1,0 +1,23 @@
+$ git diff origin/main...HEAD -- astro.config.ts
+diff --git a/astro.config.ts b/astro.config.ts
+index e884a24..61a80e6 100644
+--- a/astro.config.ts
++++ b/astro.config.ts
+@@ -31,6 +31,16 @@ export default defineConfig({
+     csp: true,
+   },
+ 
++  i18n: {
++    defaultLocale: "en",
++    locales: ["en", "pt-br"],
++    fallback: { "pt-br": "en" },
++    routing: {
++      prefixDefaultLocale: false,
++      fallbackType: "rewrite",
++    },
++  },
++
+   // Use Prism instead of Shiki for CSP compatibility
+   markdown: {
+     syntaxHighlight: "prism",
+
