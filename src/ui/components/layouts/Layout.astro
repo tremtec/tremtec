@@ -8,6 +8,7 @@ import Footer from "~/ui/components/Footer.astro";
 import Logo from "~/ui/components/Logo.astro";
 import Navbar from "~/ui/components/Navbar.astro";
 import OpenGraph from "~/ui/components/OpenGraph.astro";
+import PostHog from "~/ui/components/posthog.astro";
 
 interface Props {
   title?: string;
@@ -71,6 +72,7 @@ const {
     />
 
     <title>{title}</title>
+    <PostHog />
   </head>
 
   <body class="min-h-screen bg-base-100 text-base-content antialiased">
@@ -81,7 +83,7 @@ const {
       <input id="mobile-drawer" type="checkbox" class="drawer-toggle" />
 
       <div class="drawer-content flex flex-col min-h-screen">
-        {hideNavbar 
+        {hideNavbar
           ? <slot />
           : (
             <Navbar />

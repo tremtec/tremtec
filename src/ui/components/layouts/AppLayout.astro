@@ -5,6 +5,7 @@ import AmbientBackground from "~/ui/components/app/shell/AmbientBackground.astro
 import Sidebar from "~/ui/components/app/shell/Sidebar.astro";
 import TopBar from "~/ui/components/app/shell/TopBar.astro";
 import OpenGraph from "~/ui/components/OpenGraph.astro";
+import PostHog from "~/ui/components/posthog.astro";
 
 interface Props {
   title?: string;
@@ -34,6 +35,22 @@ const currentPath = Astro.url.pathname.replace(/\/$/, "");
     <OpenGraph title={title} description={description} />
 
     <title>{title}</title>
+    <PostHog />
+    {
+      user && (
+        <script
+          is:inline
+          define:vars={{
+            distinctId: user.id,
+            email: user.email,
+            personName: user.name,
+            role: user.role,
+          }}
+        >
+          window.posthog?.identify(distinctId, { email, name: personName, role });
+        </script>
+      )
+    }
   </head>
 
   <body class="min-h-screen bg-base-100 text-base-content antialiased">
