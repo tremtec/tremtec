@@ -3,7 +3,6 @@ import type { User } from "~/domain/user/schema";
 import { routes } from "~/server/contants";
 import Logo from "~/ui/components/Logo.astro";
 import { dashboardContent } from "~/ui/contents/dashboard";
-import { landingContent } from "~/ui/contents/landing";
 import NavSection from "./NavSection.astro";
 import UserCard from "./UserCard.astro";
 
@@ -24,7 +23,7 @@ const workspace = [...nav.workspace, ...(isAdmin ? nav.admin : [])];
     class="flex h-16 items-center gap-3 border-b border-base-content/10 px-6 transition-opacity hover:opacity-80"
   >
     <Logo size={32} />
-    <span class="text-lg font-bold tracking-tight">{landingContent.navbar.logo}</span>
+    <span class="text-lg font-bold tracking-tight">TremTec</span>
   </a>
 
   <nav class="flex flex-1 flex-col gap-8 overflow-y-auto px-4 py-6">

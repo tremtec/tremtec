@@ -1,0 +1,54 @@
+---
+import { useTranslations } from "~/i18n/utils";
+
+const t = useTranslations(Astro.currentLocale);
+const faqs = [
+  {
+    question: t("services.faq.replacing.question"),
+    answer: t("services.faq.replacing.answer"),
+  },
+  {
+    question: t("services.faq.scale.question"),
+    answer: t("services.faq.scale.answer"),
+  },
+  {
+    question: t("services.faq.support.question"),
+    answer: t("services.faq.support.answer"),
+  },
+  {
+    question: t("services.faq.remote.question"),
+    answer: t("services.faq.remote.answer"),
+  },
+  {
+    question: t("services.faq.transfer.question"),
+    answer: t("services.faq.transfer.answer"),
+  },
+  {
+    question: t("services.faq.different.question"),
+    answer: t("services.faq.different.answer"),
+  },
+];
+---
+
+<!-- FAQ -->
+<section class="bg-base-200 px-6 py-20">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="text-4xl font-bold text-base-content mb-12 text-center">
+      {t("services.faq.title")}
+    </h2>
+
+    <div class="space-y-6">
+      {faqs.map((faq) => (
+        <details class="bg-base-100 border border-base-300 rounded-lg p-6 cursor-pointer hover:shadow-md transition group">
+          <summary class="font-bold text-base-content flex items-center justify-between">
+            {faq.question}
+            <span class="group-open:rotate-180 transition">→</span>
+          </summary>
+          <p class="text-base-content/70 mt-4">
+            {faq.answer}
+          </p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>

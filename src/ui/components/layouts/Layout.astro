@@ -1,14 +1,13 @@
 ---
 import "~/ui/styles/global.css";
 
-import { routes } from "~/server/contants";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { defaultLang } from "~/i18n/ui";
+import { useTranslations } from "~/i18n/utils";
 import Footer from "~/ui/components/Footer.astro";
 import Logo from "~/ui/components/Logo.astro";
 import Navbar from "~/ui/components/Navbar.astro";
 import OpenGraph from "~/ui/components/OpenGraph.astro";
-import { landingContent } from "~/ui/contents/landing";
-
-const { navbar } = landingContent;
 
 interface Props {
   title?: string;
@@ -22,9 +21,21 @@ interface Props {
   hideNavbar?: boolean;
 }
 
-const pathname = Astro.url.pathname;
+const t = useTranslations(Astro.currentLocale);
+const locale = Astro.currentLocale ?? defaultLang;
+
+const links = [
+  { label: t("nav.home"), href: getRelativeLocaleUrl(locale) },
+  { label: t("nav.services"), href: getRelativeLocaleUrl(locale, "services") },
+  { label: t("nav.products"), href: getRelativeLocaleUrl(locale, "products") },
+  { label: t("nav.blog"), href: getRelativeLocaleUrl(locale, "blog") },
+];
+
+const trim = (p: string) =>
+  p.length > 1 && p.endsWith("/") ? p.slice(0, -1) : p;
+const pathname = trim(Astro.originPathname);
 const isActive = (href: string) =>
-  href.startsWith("#") ? false : pathname.startsWith(href);
+  href.startsWith("#") ? false : pathname.startsWith(trim(href));
 
 const {
   title = "TremTec",
@@ -40,7 +51,7 @@ const {
 ---
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang={Astro.currentLocale}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
@@ -91,16 +102,16 @@ const {
         <ul class="menu p-4 w-80 min-h-full bg-base-200 gap-2 flex flex-col">
           <div class="spacer mt-4 mb-8">
             <a
-              href={routes.public.home}
+              href={getRelativeLocaleUrl(locale)}
               class="flex dark:text-white items-center gap-2"
             >
               <Logo />
-              <span class="text-lg font-bold">{navbar.logo}</span>
+              <span class="text-lg font-bold">TremTec</span>
             </a>
           </div>
 
           {
-            navbar.links.map((link) => (
+            links.map((link) => (
               <li>
                 <a
                   href={link.href}
@@ -117,14 +128,17 @@ const {
 
           <li class="mt-4 py-4 gap-4 flex flex-col border-t border-base-300">
             <a
-              href={routes.public.login}
+              href={getRelativeLocaleUrl(locale, "login")}
               class="text-lg font-medium"
               onclick="document.getElementById('mobile-drawer').click()"
             >
-              {navbar.cta.login}
+              {t("nav.login")}
             </a>
-            <a href="/contact" class="btn btn-primary btn-sm font-medium px-6">
-              {navbar.cta.getStarted}
+            <a
+              href={getRelativeLocaleUrl(locale, "contact")}
+              class="btn btn-primary btn-sm font-medium px-6"
+            >
+              {t("nav.getStarted")}
             </a>
           </li>
         </ul>

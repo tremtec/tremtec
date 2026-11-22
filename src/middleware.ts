@@ -1,8 +1,18 @@
 import { SESSION_COOKIE_NAME } from "~/domain/auth/constants";
 import { resolveSessionUser } from "~/domain/auth/service";
 import { isAdmin } from "~/lib/session";
-import { isPrivateRoute, routes } from "~/server/contants";
+import { routes } from "~/server/contants";
+import { getRelativeLocaleUrlList } from "astro:i18n";
 import { defineMiddleware, sequence } from "astro:middleware";
+
+// Whether the pathname is under `route` in any configured locale
+const isInRoute = (pathname: string, route: string) =>
+  getRelativeLocaleUrlList(route).some((url) =>
+    pathname.startsWith(url.replace(/\/$/, "")),
+  );
+
+const isPrivateRoute = (pathname: string) =>
+  Object.values(routes.private).some((route) => isInRoute(pathname, route));
 
 // Define a simple logging middleware
 const loggingMiddleware = defineMiddleware(async (context, next) => {
@@ -30,7 +40,7 @@ const authMiddleware = defineMiddleware(async (context, next) => {
 
   const pathname = context.url.pathname;
   const needsSession =
-    isPrivateRoute(pathname) || pathname.startsWith(routes.public.login);
+    isPrivateRoute(pathname) || isInRoute(pathname, routes.public.login);
 
   // Only hit the database where the session matters
   if (needsSession) {
@@ -50,11 +60,11 @@ const authMiddleware = defineMiddleware(async (context, next) => {
     return context.redirect(routes.public.login);
   }
 
-  if (pathname.startsWith(routes.public.login) && user) {
+  if (isInRoute(pathname, routes.public.login) && user) {
     return context.redirect(routes.private.dashboard);
   }
 
-  if (pathname.startsWith(routes.private.users) && !isAdmin(user)) {
+  if (isInRoute(pathname, routes.private.users) && !isAdmin(user)) {
     return context.redirect(routes.private.dashboard);
   }
 

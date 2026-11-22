@@ -1,0 +1,44 @@
+---
+import products from "~/content/products.json";
+import { useTranslations } from "~/i18n/utils";
+
+const t = useTranslations(Astro.currentLocale);
+const categories = [...new Set(products.map((p) => p.category))];
+
+const categoryIcons: Record<string, string> = {
+  "AI Agents": "🤖",
+  "Security & Compliance": "🔒",
+  DevOps: "🚀",
+  Observability: "📡",
+  "System Automation": "⚙️",
+};
+---
+
+<!-- Products by Category -->
+{categories.map((category) => (
+  <section class="px-6 pb-16 max-w-6xl mx-auto">
+    <div class="flex items-center gap-3 mb-8">
+      <span class="text-2xl">{categoryIcons[category] ?? "📦"}</span>
+      <h2 class="text-3xl font-bold text-base-content">{category}</h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {products
+        .filter((p) => p.category === category)
+        .map((product) => (
+          <div class="bg-base-100 border border-base-300 rounded-lg p-6 hover:shadow-lg transition flex flex-col">
+            <h3 class="text-xl font-bold text-base-content mb-2">{product.name}</h3>
+            <p class="text-base-content/70 mb-4 flex-1">{product.description}</p>
+            <div class="flex flex-wrap gap-2 mb-4">
+              {product.techStack.map((tech) => (
+                <span class="badge badge-outline badge-sm">{tech}</span>
+              ))}
+            </div>
+            <a href={product.github} target="_blank" rel="noopener noreferrer" class="text-primary font-semibold text-sm hover:text-primary/80 transition inline-flex items-center gap-1">
+              {t("products.catalog.viewOnGithub")}
+            </a>
+          </div>
+        ))}
+    </div>
+  </section>
+))}

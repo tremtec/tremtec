@@ -1,0 +1,21 @@
+---
+import { useTranslations } from "~/i18n/utils";
+import Layout from "~/ui/components/layouts/Layout.astro";
+import CTA from "~/ui/components/services/CTA.astro";
+import FAQ from "~/ui/components/services/FAQ.astro";
+import Flexibility from "~/ui/components/services/Flexibility.astro";
+import PricingDrivers from "~/ui/components/services/PricingDrivers.astro";
+import Tiers from "~/ui/components/services/Tiers.astro";
+import WhyTremTec from "~/ui/components/services/WhyTremTec.astro";
+
+const t = useTranslations(Astro.currentLocale);
+---
+
+<Layout title={t("services.title")}>
+  <Tiers />
+  <WhyTremTec />
+  <Flexibility />
+  <PricingDrivers />
+  <CTA />
+  <FAQ />
+</Layout>

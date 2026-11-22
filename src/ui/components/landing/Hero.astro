@@ -1,7 +1,10 @@
 ---
-import { landingContent } from "~/ui/contents/landing";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { defaultLang } from "~/i18n/ui";
+import { useTranslations } from "~/i18n/utils";
 
-const { hero } = landingContent;
+const t = useTranslations(Astro.currentLocale);
+const locale = Astro.currentLocale ?? defaultLang;
 ---
 
 <!-- Hero Section -->
@@ -19,7 +22,7 @@ const { hero } = landingContent;
             <source srcset="/images/hero.webp" type="image/webp" />
             <img
               src="/images/hero.png"
-              alt={hero.imageAlt}
+              alt={t("home.hero.imageAlt")}
               width="600"
               height="400"
               fetchpriority="high"
@@ -37,27 +40,27 @@ const { hero } = landingContent;
         <h1
           class="text-5xl font-extrabold tracking-tight text-base-content sm:text-6xl mb-6"
         >
-          {hero.title}
+          {t("home.hero.title")}
         </h1>
         <p
           class="mt-6 text-xl leading-8 text-base-content/80 max-w-2xl mx-auto lg:mx-0"
         >
-          {hero.description}
+          {t("home.hero.description")}
         </p>
         <div
           class="mt-10 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 sm:gap-x-6"
         >
           <a
-            href="/contact"
+            href={getRelativeLocaleUrl(locale, "contact")}
             class="btn btn-primary btn-lg w-full sm:w-auto px-8"
           >
-            {hero.cta.demo}
+            {t("home.hero.cta.demo")}
           </a>
           <a
             href="#services"
             class="btn btn-ghost btn-lg w-full sm:w-auto text-sm font-semibold leading-6 text-base-content"
           >
-            {hero.cta.howItWorks}
+            {t("home.hero.cta.howItWorks")}
             <span aria-hidden="true">→</span>
           </a>
         </div>

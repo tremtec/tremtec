@@ -1,0 +1,13 @@
+---
+import { useTranslations } from "~/i18n/utils";
+import Layout from "~/ui/components/layouts/Layout.astro";
+import LoginCard from "~/ui/components/login/LoginCard.astro";
+
+const t = useTranslations(Astro.currentLocale);
+
+export const prerender = false;
+---
+
+<Layout title={t("login.title")} hideNavbar>
+  <LoginCard />
+</Layout>

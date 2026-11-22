@@ -1,0 +1,67 @@
+---
+import { useTranslations } from "~/i18n/utils";
+
+const t = useTranslations(Astro.currentLocale);
+const drivers = [
+  {
+    title: t("services.drivers.scope.title"),
+    question: t("services.drivers.scope.question"),
+    items: [
+      t("services.drivers.scope.item1"),
+      t("services.drivers.scope.item2"),
+      t("services.drivers.scope.item3"),
+      t("services.drivers.scope.item4"),
+    ],
+  },
+  {
+    title: t("services.drivers.timeline.title"),
+    question: t("services.drivers.timeline.question"),
+    items: [
+      t("services.drivers.timeline.item1"),
+      t("services.drivers.timeline.item2"),
+      t("services.drivers.timeline.item3"),
+    ],
+  },
+  {
+    title: t("services.drivers.team.title"),
+    question: t("services.drivers.team.question"),
+    items: [
+      t("services.drivers.team.item1"),
+      t("services.drivers.team.item2"),
+      t("services.drivers.team.item3"),
+    ],
+  },
+  {
+    title: t("services.drivers.support.title"),
+    question: t("services.drivers.support.question"),
+    items: [
+      t("services.drivers.support.item1"),
+      t("services.drivers.support.item2"),
+      t("services.drivers.support.item3"),
+    ],
+  },
+];
+---
+
+<!-- Pricing Drivers -->
+<section class="px-6 py-20 max-w-6xl mx-auto">
+  <h2 class="text-4xl font-bold text-base-content mb-12 text-center">
+    {t("services.drivers.title")}
+  </h2>
+
+  <div class="grid md:grid-cols-2 gap-12">
+    {drivers.map((driver) => (
+      <div class="bg-base-200 border border-base-300 rounded-lg p-8">
+        <h3 class="text-xl font-bold text-base-content mb-4">{driver.title}</h3>
+        <p class="text-base-content/70 mb-6">
+          {driver.question}
+        </p>
+        <ul class="space-y-2 text-base-content/70">
+          {driver.items.map((item) => (
+            <li>• {item}</li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+</section>

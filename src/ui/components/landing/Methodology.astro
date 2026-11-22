@@ -1,8 +1,25 @@
 ---
 import { Icon } from "astro-icon/components";
-import { landingContent } from "~/ui/contents/landing";
+import { useTranslations } from "~/i18n/utils";
 
-const { methodology } = landingContent;
+const t = useTranslations(Astro.currentLocale);
+const features = [
+  {
+    title: t("home.methodology.people.title"),
+    description: t("home.methodology.people.description"),
+    icon: "heroicons:users",
+  },
+  {
+    title: t("home.methodology.constraints.title"),
+    description: t("home.methodology.constraints.description"),
+    icon: "heroicons:adjustments-horizontal",
+  },
+  {
+    title: t("home.methodology.knowledge.title"),
+    description: t("home.methodology.knowledge.description"),
+    icon: "heroicons:shield-check",
+  },
+];
 ---
 
 <!-- Methodology Section -->
@@ -15,23 +32,23 @@ const { methodology } = landingContent;
         <div class="md:max-w-lg">
           <div class="max-w-2xl mb-12 md:max-w-lg">
             <h2 class="text-base font-semibold leading-7 text-primary">
-              {methodology.badge}
+              {t("home.methodology.badge")}
             </h2>
 
             <p
               class="mt-2 text-3xl font-bold tracking-tight text-base-content sm:text-4xl"
             >
-              {methodology.title}
+              {t("home.methodology.title")}
             </p>
             <p class="mt-6 text-lg leading-8 text-base-content/70">
-              {methodology.description}
+              {t("home.methodology.description")}
             </p>
           </div>
           <dl
             class="mt-10 max-w-xl space-y-8 text-base leading-7 text-base-content/70"
           >
             {
-              methodology.features.map((feature) => (
+              features.map((feature) => (
                 <div class="relative pl-9">
                   <dt class="inline font-semibold text-base-content">
                     <Icon

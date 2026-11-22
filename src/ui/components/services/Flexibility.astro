@@ -1,0 +1,90 @@
+---
+import { useTranslations } from "~/i18n/utils";
+
+const t = useTranslations(Astro.currentLocale);
+const team = [
+  {
+    strong: t("services.flexibility.team.item1.strong"),
+    text: t("services.flexibility.team.item1.text"),
+  },
+  {
+    strong: t("services.flexibility.team.item2.strong"),
+    text: t("services.flexibility.team.item2.text"),
+  },
+  {
+    strong: t("services.flexibility.team.item3.strong"),
+    text: t("services.flexibility.team.item3.text"),
+  },
+  {
+    strong: t("services.flexibility.team.item4.strong"),
+    text: t("services.flexibility.team.item4.text"),
+  },
+  {
+    strong: t("services.flexibility.team.item5.strong"),
+    text: t("services.flexibility.team.item5.text"),
+  },
+];
+const models = [
+  {
+    strong: t("services.flexibility.models.item1.strong"),
+    text: t("services.flexibility.models.item1.text"),
+  },
+  {
+    strong: t("services.flexibility.models.item2.strong"),
+    text: t("services.flexibility.models.item2.text"),
+  },
+  {
+    strong: t("services.flexibility.models.item3.strong"),
+    text: t("services.flexibility.models.item3.text"),
+  },
+  {
+    strong: t("services.flexibility.models.item4.strong"),
+    text: t("services.flexibility.models.item4.text"),
+  },
+  {
+    strong: t("services.flexibility.models.item5.strong"),
+    text: t("services.flexibility.models.item5.text"),
+  },
+];
+---
+
+<!-- Flexibility Section -->
+<section class="bg-base-200 px-6 py-20">
+  <div class="max-w-6xl mx-auto">
+    <h2 class="text-4xl font-bold mb-12 text-center text-base-content">
+      {t("services.flexibility.title")}
+    </h2>
+
+    <div class="grid md:grid-cols-2 gap-12">
+      <div>
+        <h3 class="text-xl font-bold mb-4 text-base-content">{t("services.flexibility.team.title")}</h3>
+        <p class="text-base-content/70 mb-6">
+          {t("services.flexibility.team.description")}
+        </p>
+        <ul class="space-y-3 text-base-content/80">
+          {team.map((item) => (
+            <li class="flex items-start">
+              <span class="mr-3">→</span>
+              <span><strong>{item.strong}</strong> {item.text}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="text-xl font-bold mb-4 text-base-content">{t("services.flexibility.models.title")}</h3>
+        <p class="text-base-content/70 mb-6">
+          {t("services.flexibility.models.description")}
+        </p>
+        <ul class="space-y-3 text-base-content/80">
+          {models.map((item) => (
+            <li class="flex items-start">
+              <span class="mr-3">→</span>
+              <span><strong>{item.strong}</strong> — {item.text}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
