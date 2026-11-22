@@ -34,7 +34,7 @@ src/
 │   └── shared/
 ├── server/      # Hono routes (auth, contact, health)
 ├── pages/       # Astro routes, blog and RSS
-├── content/     # Blog posts and products (content collections)
+├── content/     # Blog posts (content collections)
 ├── ui/          # Astro components, styles, assets
 ├── lib/         # API client, errors, helpers
 ├── middleware.ts
