@@ -1,5 +1,5 @@
 import { defineCollection } from "astro/content/config";
-import { file, glob } from "astro/loaders";
+import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 
 const blogSchema = z.object({
@@ -16,21 +16,9 @@ const blog = defineCollection({
   schema: blogSchema,
 });
 
-const productSchema = z.object({
-  name: z.string().min(3),
-  description: z.string().min(3),
-  techStack: z.array(z.string()).min(1),
-});
-
-const products = defineCollection({
-  loader: file("./src/content/products.json"),
-  schema: productSchema,
-});
-
 // Expose your defined collection to Astro
 // with the `collections` export
 export const collections = {
   // TODO: add page content
   blog,
-  products,
 };

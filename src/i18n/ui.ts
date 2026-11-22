@@ -5,7 +5,6 @@ export const ui = {
     // shared chrome
     "nav.home": "Home",
     "nav.services": "Services",
-    "nav.products": "Products",
     "nav.blog": "Blog",
     "nav.login": "Log in",
     "nav.getStarted": "Get Started",
@@ -278,26 +277,11 @@ export const ui = {
     "contact.trust.obligation.description": "Free consultation, no pressure",
     "contact.trust.privacy.title": "Privacy Protected",
     "contact.trust.privacy.description": "Your information is safe with us",
-
-    // products
-    "products.title": "Products - TremTec",
-    "products.description":
-      "Open-source CLI tools for DevOps, Security, and System Automation.",
-    "products.hero.eyebrow": "Open-Source Tools",
-    "products.hero.title": "CLI Tools That Ship With You",
-    "products.hero.description":
-      "Battle-tested command-line tools for DevOps, security scanning, system automation, and AI-powered workflows. Built in Go. Open source.",
-    "products.catalog.viewOnGithub": "View on GitHub →",
-    "products.cta.title": "Need a Custom Tool?",
-    "products.cta.description":
-      "We build bespoke CLI tools and automation pipelines tailored to your stack. Let's talk about what you need.",
-    "products.cta.button": "Get in touch",
   },
   "pt-br": {
     // shared chrome
     "nav.home": "Início",
     "nav.services": "Serviços",
-    "nav.products": "Produtos",
     "nav.blog": "Blog",
     "nav.login": "Entrar",
     "nav.getStarted": "Começar",
@@ -583,19 +567,5 @@ export const ui = {
     "contact.trust.obligation.description": "Consulta gratuita, sem pressão",
     "contact.trust.privacy.title": "Privacidade Protegida",
     "contact.trust.privacy.description": "Os seus dados estão seguros conosco",
-
-    // products
-    "products.title": "Produtos - TremTec",
-    "products.description":
-      "Ferramentas de linha de comando de código aberto para DevOps, Segurança e Automação de Sistemas.",
-    "products.hero.eyebrow": "Ferramentas de Código Aberto",
-    "products.hero.title": "Ferramentas de CLI Que Entregam Com Você",
-    "products.hero.description":
-      "Ferramentas de linha de comando testadas em batalha para DevOps, varredura de segurança, automação de sistemas e fluxos de trabalho com IA. Feitas em Go. Código aberto.",
-    "products.catalog.viewOnGithub": "Ver no GitHub →",
-    "products.cta.title": "Precisa de uma Ferramenta Sob Medida?",
-    "products.cta.description":
-      "Criamos ferramentas de CLI e pipelines de automação sob medida para a sua stack. Vamos conversar sobre o que você precisa.",
-    "products.cta.button": "Fale conosco",
   },
 } as const;
