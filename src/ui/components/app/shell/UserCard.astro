@@ -18,8 +18,21 @@ const { user } = Astro.props;
       <p class="truncate text-sm font-semibold">{user.name}</p>
       <p class="text-xs capitalize text-base-content/50">{user.role}</p>
     </div>
-    <a href={routes.public.logout} class="btn btn-ghost btn-square btn-sm" aria-label="Sign out" title="Sign out">
+    <a
+      href={routes.public.logout}
+      class="btn btn-ghost btn-square btn-sm"
+      aria-label="Sign out"
+      title="Sign out"
+      data-posthog-logout
+    >
       <Icon name="heroicons:arrow-right-start-on-rectangle" class="size-5" />
     </a>
   </div>
 </div>
+
+<script is:inline>
+  document.querySelector('[data-posthog-logout]')?.addEventListener('click', () => {
+    window.posthog?.capture('user_logged_out');
+    window.posthog?.reset();
+  });
+</script>

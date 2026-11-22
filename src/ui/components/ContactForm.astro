@@ -35,7 +35,7 @@ const { fields, submit } = Astro.props;
   hx-swap="innerHTML"
   hx-indicator="#submit-btn"
   hx-trigger="htmx:after-request"
-  onhtmx:after-request="if(event.detail.successful) { this.reset(); }"
+  onhtmx:after-request="if(event.detail.successful) { window.posthog?.capture('contact_form_submitted'); window.posthog?.logger?.info('contact form submitted'); this.reset(); }"
   class="flex flex-col gap-6"
 >
   <!-- Form-level response area -->

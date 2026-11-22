@@ -44,6 +44,7 @@ const endpoint = `/api/users/${user.id}`;
       hx-patch={endpoint}
       hx-trigger="change"
       hx-swap="none"
+      onhtmx:after-request="if(event.detail.successful) { window.posthog?.capture('user_updated', { field: 'role' }); window.posthog?.logger?.info('user updated', { field: 'role' }); }"
     >
       {roleEnum.options.map((r) => <option value={r} selected={user.role === r}>{r}</option>)}
     </select>
@@ -57,6 +58,7 @@ const endpoint = `/api/users/${user.id}`;
       hx-patch={endpoint}
       hx-trigger="change"
       hx-swap="none"
+      onhtmx:after-request="if(event.detail.successful) { window.posthog?.capture('user_updated', { field: 'status' }); window.posthog?.logger?.info('user updated', { field: 'status' }); }"
     >
       {statusEnum.options.map((s) => <option value={s} selected={user.status === s}>{s}</option>)}
     </select>
@@ -73,6 +75,7 @@ const endpoint = `/api/users/${user.id}`;
           hx-delete={endpoint}
           hx-confirm={`Delete ${user.name}? They can sign up again, but will start as pending.`}
           hx-swap="none"
+          onhtmx:after-request="if(event.detail.successful) { window.posthog?.capture('user_deleted'); window.posthog?.logger?.info('user deleted'); }"
         >
           <Icon name="heroicons:trash" class="size-4" />
         </button>
