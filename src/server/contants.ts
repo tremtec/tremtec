@@ -9,9 +9,3 @@ export const routes = {
     logout: "/api/auth/logout",
   },
 } as const;
-
-export const isPublicRoute = (path: string) => {
-  return Object.values(routes.public).some((publicPath) =>
-    path.startsWith(publicPath),
-  );
-};
