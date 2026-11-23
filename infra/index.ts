@@ -25,7 +25,8 @@ const secrets = {
   session: config.requireSecret("session-secret"),
 };
 
-const today = () => new Date().toISOString().split("T")[0];
+// Fixed compatibility date - update intentionally when adopting new Workers runtime features
+const COMPATIBILITY_DATE = "2026-02-03";
 
 const absolutePath = (relativePath: string) =>
   new URL(relativePath, import.meta.url).pathname;
@@ -171,7 +172,7 @@ const workerVersion = new cloudflare.WorkerVersion(
     accountId,
     workerId: worker.id,
     mainModule: "index.js",
-    compatibilityDate: today(), // "2026-02-03",
+    compatibilityDate: COMPATIBILITY_DATE,
     compatibilityFlags: ["global_fetch_strictly_public", "nodejs_compat"],
 
     assets: {
