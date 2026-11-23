@@ -1,0 +1,63 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "UTC"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "UTC"
+    labels:
+      - "dependencies"
+      - "npm"
+    commit-message:
+      prefix: "deps"
+    ignore:
+      - dependency-name: "@types/node"
+        versions: [">=22"]
+    groups:
+      dev-dependencies:
+        patterns:
+          - "@types/*"
+          - "@biomejs/*"
+          - "@vitest/*"
+          - "vitest"
+          - "lefthook"
+          - "miniflare"
+          - "jsdom"
+        update-types:
+          - "minor"
+          - "patch"
+      production-dependencies:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+        exclude-patterns:
+          - "@types/*"
+          - "@biomejs/*"
+          - "@vitest/*"
+          - "vitest"
+          - "lefthook"
+          - "miniflare"
+          - "jsdom"
